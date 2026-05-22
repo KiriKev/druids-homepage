@@ -2179,12 +2179,12 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   color: var(--gold);
 }
 .cta__priceNote {
-  margin: 0 auto 18px;
-  max-width: 56ch;
+  margin: 0 auto 36px;
+  max-width: 60ch;
   font-family: var(--ff-italic);
   font-style: italic;
-  font-size: clamp(15px, 1.1vw, 18px);
-  line-height: 1.6;
+  font-size: clamp(17px, 1.35vw, 22px);
+  line-height: 1.55;
   color: var(--gold-glow);
   text-wrap: pretty;
 }

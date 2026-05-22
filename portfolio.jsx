@@ -1252,7 +1252,6 @@ function CTA({ onChat }) {
           {t("cta.title.a")}<em>{t("cta.title.em")}</em>
         </h2>
         <p className="cta__priceNote">{br(t("cta.priceNote"))}</p>
-        <p className="cta__sub">{br(t("cta.sub"))}</p>
         <button className="btn btn--solid btn--lg" onClick={onChat}>
           {t("cta.button")} <span className="btn__arrow">→</span>
         </button>
