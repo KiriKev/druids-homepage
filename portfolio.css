@@ -1785,10 +1785,11 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: clamp(32px, 4vw, 56px);
-  /* Narrower than the page maxw so the card visually centers with
-     air on both sides — the section grid above can stretch to the
-     full maxw without forcing the award to follow. */
-  max-width: min(1100px, calc(100% - 2 * var(--gutter)));
+  /* Match the visible width of the testimonials grid above: maxw
+     minus the section gutter on each side. Borders align cleanly
+     with the left/right edges of the quote cards. */
+  width: calc(100% - 2 * var(--gutter));
+  max-width: calc(var(--maxw) - 2 * var(--gutter));
   margin: 48px auto 0;
   padding: clamp(28px, 3vw, 40px) clamp(28px, 3.5vw, 48px);
   border: 1px solid rgba(201, 163, 92, 0.22);
