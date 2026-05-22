@@ -461,8 +461,37 @@ html { scroll-behavior: smooth; }
   .lang__trigger { display: inline-flex; }
   .lang__menu { display: flex; }
 }
+/* Mobile nav slim-down — the header otherwise overflows on phones
+   once the section dropdown + language picker + CTA are added to
+   the logo. Trim type/padding so everything sits on one line. */
+@media (max-width: 800px) {
+  .nav { padding: 14px clamp(14px, 4vw, 22px); }
+  .nav--scrolled { padding: 10px clamp(14px, 4vw, 22px); }
+  .nav__logo { font-size: 18px; gap: 8px; }
+  .nav__logo-mark img { height: 22px; }
+  .nav .btn--ghost {
+    padding: 8px 14px;
+    font-size: 12px;
+    gap: 6px;
+  }
+  .nav .btn--ghost .btn__arrow { font-size: 12px; }
+  .section-dd__trigger {
+    padding: 5px 8px 5px 10px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    gap: 4px;
+  }
+}
 @media (max-width: 560px) {
-  .nav__right { gap: 10px; }
+  .nav__right { gap: 8px; }
+  /* Hide the Druids wordmark below 560px; the gold mark stays
+     visible as the brand anchor. */
+  .nav__logo-text { display: none; }
+  /* Tighten further for very narrow viewports. */
+  .nav .btn--ghost { padding: 7px 12px; font-size: 11px; }
+  .section-dd__trigger { padding: 4px 8px 4px 8px; font-size: 9.5px; }
+  .lang__trigger { padding: 3px 7px 3px 6px; }
+  .lang__trigger-flag { width: 20px; height: 14px; }
 }
 
 /* ─── Spine helix ────────────────────────────────────────────── */
