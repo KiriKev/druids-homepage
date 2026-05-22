@@ -2262,6 +2262,265 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   width: 4px; height: 4px; border-radius: 50%; background: var(--gold);
 }
 
+/* ─── Project brief modal ────────────────────────────────────── */
+.brief-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(24px, 5vh, 64px) clamp(12px, 3vw, 32px);
+  background: rgba(7, 13, 12, 0.78);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  overflow-y: auto;
+  animation: briefModalIn .3s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes briefModalIn {
+  from { opacity: 0; backdrop-filter: blur(0); }
+  to   { opacity: 1; }
+}
+.brief-modal__dialog {
+  width: 100%;
+  max-width: 720px;
+  background:
+    radial-gradient(ellipse at 75% 0%, rgba(13, 77, 74, 0.22), transparent 60%),
+    var(--ink-2);
+  border: 1px solid rgba(201, 163, 92, 0.22);
+  border-radius: 10px;
+  padding: clamp(32px, 4vw, 56px) clamp(28px, 4vw, 48px);
+  position: relative;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.7);
+  animation: briefDialogIn .35s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes briefDialogIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: none; }
+}
+.brief-modal__dialog::before {
+  /* Same gold-rule motif as the recognition card. */
+  content: "";
+  position: absolute; top: 0; left: 0; width: 50%; height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+.brief-modal__close {
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(7, 13, 12, 0.7);
+  border: 1px solid rgba(243, 234, 216, 0.18);
+  color: var(--cream);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .2s, border-color .2s, background .2s, transform .25s cubic-bezier(.2,.7,.2,1);
+  z-index: 2;
+}
+.brief-modal__close:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(201, 163, 92, 0.12);
+  transform: scale(1.06);
+}
+.brief-modal__head {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.brief-modal__head .eyebrow {
+  justify-content: center;
+}
+.brief-modal__title {
+  font-family: var(--ff-display);
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  margin: 0 0 18px;
+  text-wrap: balance;
+  color: var(--cream);
+}
+.brief-modal__title em {
+  font-family: var(--ff-italic);
+  font-style: italic;
+  color: var(--gold);
+}
+.brief-modal__lede {
+  font-size: clamp(14px, 1vw, 16px);
+  line-height: 1.6;
+  color: var(--cream-dim);
+  max-width: 52ch;
+  margin: 0 auto;
+}
+.brief-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 20px;
+  margin-top: 8px;
+}
+.brief-modal__alt {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+.brief-modal__alt:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+.brief__form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  text-align: left;
+}
+.brief__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.brief__label {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.brief__optional,
+.brief__required {
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  font-style: italic;
+  text-transform: lowercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.brief__optional {
+  color: var(--cream-dim);
+  background: rgba(243, 234, 216, 0.06);
+}
+.brief__required {
+  color: var(--gold-glow);
+  background: rgba(201, 163, 92, 0.10);
+  border: 1px solid rgba(201, 163, 92, 0.28);
+}
+
+.brief__choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.brief__choice {
+  appearance: none;
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: rgba(7, 13, 12, 0.6);
+  border: 1px solid rgba(243, 234, 216, 0.14);
+  color: var(--cream);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: color .25s, border-color .25s, background .25s, transform .25s cubic-bezier(.2,.7,.2,1);
+}
+.brief__choice:hover {
+  border-color: rgba(201, 163, 92, 0.55);
+  color: var(--gold-glow);
+  transform: translateY(-1px);
+}
+.brief__choice.is-active {
+  border-color: var(--gold);
+  background: rgba(201, 163, 92, 0.14);
+  color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), 0 8px 24px -10px rgba(231, 200, 133, 0.5);
+}
+
+.brief__input {
+  appearance: none;
+  width: 100%;
+  font-family: var(--ff-body);
+  font-size: 15px;
+  color: var(--cream);
+  background: rgba(7, 13, 12, 0.55);
+  border: 1px solid rgba(243, 234, 216, 0.14);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: border-color .25s, background .25s, box-shadow .25s;
+  box-sizing: border-box;
+}
+.brief__input::placeholder { color: rgba(243, 234, 216, 0.35); }
+.brief__input:hover { border-color: rgba(243, 234, 216, 0.28); }
+.brief__input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(7, 13, 12, 0.75);
+  box-shadow: 0 0 0 1px var(--gold), 0 6px 24px -12px rgba(231, 200, 133, 0.4);
+}
+.brief__input--select {
+  /* Custom caret via background image so the native one isn't fighting our theme. */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 44px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1 L6 6 L11 1' fill='none' stroke='%23c9a35c' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+}
+.brief__input--textarea {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.5;
+  font-family: var(--ff-body);
+}
+
+.brief__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.brief__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 8px;
+  animation: briefIn .35s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes briefIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.brief__submit { margin: 0; }
+
+@media (max-width: 700px) {
+  .brief__row { grid-template-columns: 1fr; }
+  .brief-modal { padding: 12px; align-items: stretch; }
+  .brief-modal__dialog { padding: clamp(24px, 6vw, 36px) clamp(20px, 5vw, 32px); }
+  .brief-modal__close { top: 12px; right: 12px; width: 32px; height: 32px; }
+  .brief-modal__actions { flex-direction: column; align-items: stretch; }
+  .brief__submit { justify-content: center; }
+  .brief-modal__alt { align-self: center; }
+}
+
 /* ─── Footer ─────────────────────────────────────────────────── */
 .footer {
   padding: 36px var(--gutter);

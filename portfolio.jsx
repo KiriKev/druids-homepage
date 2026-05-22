@@ -1297,6 +1297,249 @@ function CTA({ onChat }) {
   );
 }
 
+// ─── Project brief (modal) ────────────────────────────────────────
+// Opened by every "Let's chat" button. Branched intake form: pick
+// a topic, answer 1–2 specifics, optional budget/email/handle,
+// mandatory description. Submits via mailto:kgermin@tuta.io with a
+// structured body so the inbox shows exactly what the visitor wants
+// (animation vs automation vs DeFi vs copy). A secondary
+// "book a call instead" link exposes the Calendly URL.
+
+const BRIEF_SERVICES = ["animations", "copywriting", "automations", "defi"];
+
+const BRIEF_QUESTIONS = {
+  animations: [
+    { id: "type", type: "select", options: 4 },
+    { id: "duration", type: "select", options: 4 },
+  ],
+  automations: [
+    { id: "type", type: "select", options: 5 },
+    { id: "tools", type: "text" },
+  ],
+  defi: [
+    { id: "need", type: "select", options: 5 },
+    { id: "audience", type: "select", options: 4 },
+  ],
+  copywriting: [
+    { id: "format", type: "select", options: 6 },
+  ],
+};
+
+const BRIEF_EMAIL = "kgermin@tuta.io";
+
+function ProjectBriefModal({ open, onClose, calendlyUrl }) {
+  const t = useT();
+  const [service, setService] = useState(null);
+  const [form, setForm] = useState({});
+  const dialogRef = useRef(null);
+  const setField = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+
+  // Lock body scroll + Esc-to-close while the modal is open. Reset
+  // state when it closes so the next open starts fresh.
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open, onClose]);
+
+  useEffect(() => {
+    if (!open) {
+      // Defer reset so closing transitions don't flash content.
+      const id = setTimeout(() => { setService(null); setForm({}); }, 200);
+      return () => clearTimeout(id);
+    }
+  }, [open]);
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (!form.description || !form.description.trim()) return;
+    const qList = BRIEF_QUESTIONS[service] || [];
+    const lines = [
+      `Service: ${t(`brief.service.${service}`)}`,
+      ...qList.map((q) => {
+        const label = t(`brief.${service}.${q.id}.label`);
+        return `${label}: ${form[q.id] || "—"}`;
+      }),
+      `${t("brief.budget.label")}: ${form.budget || "—"}`,
+      `${t("brief.email.label")}: ${form.email || "—"}`,
+      `${t("brief.contact.label")}: ${form.contact || "—"}`,
+      "",
+      `${t("brief.description.label")}:`,
+      form.description,
+    ];
+    const subject = encodeURIComponent(`Druids brief — ${t(`brief.service.${service}`)}`);
+    const body = encodeURIComponent(lines.join("\n"));
+    window.location.href = `mailto:${BRIEF_EMAIL}?subject=${subject}&body=${body}`;
+  };
+
+  if (!open) return null;
+
+  return ReactDOM.createPortal(
+    <div
+      className="brief-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="brief-modal-title"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="brief-modal__dialog" ref={dialogRef} onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className="brief-modal__close"
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
+          aria-label={t("brief.close")}
+        >
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M5 5 L19 19 M19 5 L5 19" />
+          </svg>
+        </button>
+
+        <header className="brief-modal__head">
+          <span className="eyebrow"><span className="eyebrow__dot" /> {t("brief.eyebrow")}</span>
+          <h2 id="brief-modal-title" className="brief-modal__title">
+            {t("brief.title.a")}<em>{t("brief.title.em")}</em>
+          </h2>
+          <p className="brief-modal__lede">{br(t("brief.lede"))}</p>
+        </header>
+
+        <form className="brief__form" onSubmit={onSubmit}>
+          <div className="brief__field">
+            <label className="brief__label">{t("brief.service.label")}</label>
+            <div className="brief__choices">
+              {BRIEF_SERVICES.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`brief__choice ${service === s ? "is-active" : ""}`}
+                  onClick={() => { setService(s); setForm({}); }}
+                >
+                  {t(`brief.service.${s}`)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {service && (
+            <div className="brief__panel" key={service}>
+              {(BRIEF_QUESTIONS[service] || []).map((q) => {
+                const labelKey = `brief.${service}.${q.id}.label`;
+                const fieldId = `brief-${service}-${q.id}`;
+                if (q.type === "text") {
+                  return (
+                    <div className="brief__field" key={q.id}>
+                      <label className="brief__label" htmlFor={fieldId}>{t(labelKey)}</label>
+                      <input
+                        id={fieldId}
+                        className="brief__input"
+                        type="text"
+                        placeholder={t(`brief.${service}.${q.id}.placeholder`)}
+                        value={form[q.id] || ""}
+                        onChange={(e) => setField(q.id, e.target.value)}
+                      />
+                    </div>
+                  );
+                }
+                return (
+                  <div className="brief__field" key={q.id}>
+                    <label className="brief__label" htmlFor={fieldId}>{t(labelKey)}</label>
+                    <select
+                      id={fieldId}
+                      className="brief__input brief__input--select"
+                      value={form[q.id] || ""}
+                      onChange={(e) => setField(q.id, e.target.value)}
+                    >
+                      <option value="">{t("brief.choose")}</option>
+                      {[...Array(q.options)].map((_, i) => {
+                        const label = t(`brief.${service}.${q.id}.o${i + 1}`);
+                        return <option key={i} value={label}>{label}</option>;
+                      })}
+                    </select>
+                  </div>
+                );
+              })}
+
+              <div className="brief__field">
+                <label className="brief__label" htmlFor="brief-budget">
+                  {t("brief.budget.label")} <span className="brief__optional">{t("brief.optional")}</span>
+                </label>
+                <select
+                  id="brief-budget"
+                  className="brief__input brief__input--select"
+                  value={form.budget || ""}
+                  onChange={(e) => setField("budget", e.target.value)}
+                >
+                  <option value="">{t("brief.budget.placeholder")}</option>
+                  {[1, 2, 3].map((i) => {
+                    const label = t(`brief.budget.o${i}`);
+                    return <option key={i} value={label}>{label}</option>;
+                  })}
+                </select>
+              </div>
+
+              <div className="brief__row">
+                <div className="brief__field">
+                  <label className="brief__label" htmlFor="brief-email">
+                    {t("brief.email.label")} <span className="brief__optional">{t("brief.optional")}</span>
+                  </label>
+                  <input
+                    id="brief-email"
+                    className="brief__input"
+                    type="email"
+                    placeholder={t("brief.email.placeholder")}
+                    value={form.email || ""}
+                    onChange={(e) => setField("email", e.target.value)}
+                  />
+                </div>
+                <div className="brief__field">
+                  <label className="brief__label" htmlFor="brief-contact">
+                    {t("brief.contact.label")} <span className="brief__optional">{t("brief.optional")}</span>
+                  </label>
+                  <input
+                    id="brief-contact"
+                    className="brief__input"
+                    type="text"
+                    placeholder={t("brief.contact.placeholder")}
+                    value={form.contact || ""}
+                    onChange={(e) => setField("contact", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="brief__field">
+                <label className="brief__label" htmlFor="brief-description">
+                  {t("brief.description.label")} <span className="brief__required">{t("brief.required")}</span>
+                </label>
+                <textarea
+                  id="brief-description"
+                  className="brief__input brief__input--textarea"
+                  rows={5}
+                  required
+                  placeholder={t("brief.description.placeholder")}
+                  value={form.description || ""}
+                  onChange={(e) => setField("description", e.target.value)}
+                />
+              </div>
+
+              <div className="brief-modal__actions">
+                <button type="submit" className="btn btn--solid btn--lg brief__submit">
+                  {t("brief.submit")} <span className="btn__arrow">→</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </form>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 // ─── Footer ───────────────────────────────────────────────────────
 function Footer() {
   const t = useT();
@@ -1413,7 +1656,13 @@ function Page() {
     }
   }, [tw.palette]);
 
-  const onChat = () => { window.open(CALENDLY_URL, "_blank", "noopener"); };
+  // "Let's chat" now opens the project-brief modal instead of jumping
+  // out to Calendly directly. The Calendly URL stays as a secondary
+  // option exposed inside the modal for visitors who'd rather book a
+  // call up front.
+  const [briefOpen, setBriefOpen] = useState(false);
+  const openBrief = useCallback(() => setBriefOpen(true), []);
+  const closeBrief = useCallback(() => setBriefOpen(false), []);
 
   return (
     <LightboxContext.Provider value={openLightbox}>
@@ -1424,9 +1673,9 @@ function Page() {
       )}
       {tw.grain && <div className="grain" aria-hidden="true" />}
 
-      <Nav onChat={onChat} />
+      <Nav onChat={openBrief} />
       <main>
-        <Hero progress={progress} onChat={onChat} />
+        <Hero progress={progress} onChat={openBrief} />
         <WorkedFor />
         <Services />
         <Work />
@@ -1434,9 +1683,11 @@ function Page() {
         <Testimonials />
         <Tools />
         <Builder />
-        <CTA onChat={onChat} />
+        <CTA onChat={openBrief} />
       </main>
       <Footer />
+
+      <ProjectBriefModal open={briefOpen} onClose={closeBrief} calendlyUrl={CALENDLY_URL} />
 
       {lb && <Lightbox items={lb.items} startIndex={lb.startIndex} onClose={closeLightbox} />}
 
