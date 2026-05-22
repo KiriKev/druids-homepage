@@ -6,18 +6,18 @@ Static HTML/CSS/JS prototype. React 18 + Babel loaded from CDN in the browser �
 
 ## Run locally
 
-Serve the directory with any static file server, then open `Portfolio.html`.
+Serve the directory with any static file server.
 
 ```bash
 npx --yes http-server . -p 5173 -c-1 --cors
-# → http://localhost:5173/Portfolio.html
+# → http://localhost:5173/
 ```
 
 ## Layout
 
 | File | Purpose |
 |---|---|
-| [`Portfolio.html`](Portfolio.html) | Entry — loads React, Babel, and the JSX/JS modules |
+| [`index.html`](index.html) | Entry — loads React, Babel, and the JSX/JS modules |
 | [`portfolio.jsx`](portfolio.jsx) | Page composition + `Nav`, `Hero`, `Services`, `Work`, `Approach`, `Tools`, `Builder`, `Testimonials`, `CTA`, `Footer`, lightbox, and the shared `VideoPlayer` |
 | [`i18n.jsx`](i18n.jsx) | EN / DE / RU translations + the language switching machinery |
 | [`helix.jsx`](helix.jsx) | Hero and spine double-helix SVG components |
