@@ -158,7 +158,7 @@ const TR = {
     "award.of": "of 140",
     "award.eyebrow": "Recognition · PsyopAnime",
     "award.title": "Top 10% in a viral animation competition.",
-    "award.body": "One of 140 entrants. Task: Create a controversial storyline. Voiced the scenes from the original audio and composed the frames.",
+    "award.body": "One of 140 entrants. Task: Create a controversial storyline. Voiced the scenes from the original audio and composed the frames. Proved that I can take on any task, no matter the topic or difficulty.",
     "award.handle": "Find me as @0xKiriKev in the shoutout.",
     "award.cta": "Read the announcement",
 
@@ -330,7 +330,7 @@ const TR = {
     "award.of": "von 140",
     "award.eyebrow": "Anerkennung · PsyopAnime",
     "award.title": "Top 10% in einem viralen Animationswettbewerb.",
-    "award.body": "Einer von 140 Teilnehmern. Aufgabe: Eine kontroverse Storyline erstellen. Die Szenen anhand der Originalstimmen vertont und die Bilder dazu gestaltet.",
+    "award.body": "Einer von 140 Teilnehmern. Aufgabe: Eine kontroverse Storyline erstellen. Die Szenen anhand der Originalstimmen vertont und die Bilder dazu gestaltet. Bewiesen, dass ich jede Aufgabe übernehmen kann, egal welches Thema oder welche Schwierigkeit.",
     "award.handle": "In der Würdigung findest du mich als @0xKiriKev.",
     "award.cta": "Zur Ankündigung",
     "award.videoLabel": "Den Film ansehen",
@@ -505,7 +505,7 @@ const TR = {
     "award.of": "из 140",
     "award.eyebrow": "Признание · PsyopAnime",
     "award.title": "Топ 10% в вирусном конкурсе анимации.",
-    "award.body": "Один из 140 участников. Задача: создать противоречивый сюжет. Озвучил сцены по оригинальному звуку и составил кадры.",
+    "award.body": "Один из 140 участников. Задача: создать противоречивый сюжет. Озвучил сцены по оригинальному звуку и составил кадры. Доказал, что могу взяться за любую задачу — какой бы ни была тема и сложность.",
     "award.handle": "В упоминании меня можно найти как @0xKiriKev.",
     "award.cta": "К объявлению",
 

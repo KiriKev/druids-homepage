@@ -960,6 +960,15 @@ function ToolPanelInner({ tool, visibleEx, exampleIdx, setExampleIdx, openLightb
           .filter(Boolean);
         if (items.length) openLightbox(items, Math.min(exampleIdx, items.length - 1));
       };
+  const total = tool.examples.length;
+  const goPrev = (ev) => {
+    if (ev) ev.stopPropagation();
+    setExampleIdx((idx) => (idx - 1 + total) % total);
+  };
+  const goNext = (ev) => {
+    if (ev) ev.stopPropagation();
+    setExampleIdx((idx) => (idx + 1) % total);
+  };
   return (
     <>
       <div
@@ -981,22 +990,58 @@ function ToolPanelInner({ tool, visibleEx, exampleIdx, setExampleIdx, openLightb
           ></image-slot>
         )}
         <span className="tools__panel-tag">{t(`tools.${tool.key}.role`)}</span>
+        {total > 1 && (
+          <>
+            <button
+              type="button"
+              className="tools__nav tools__nav--prev"
+              onClick={goPrev}
+              aria-label="Previous example"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M15 5 L8 12 L15 19" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="tools__nav tools__nav--next"
+              onClick={goNext}
+              aria-label="Next example"
+            >
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M9 5 L16 12 L9 19" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
-      {tool.examples.length > 1 && (
-        <div className="tools__rail" role="tablist" aria-label="Examples">
+      {total > 1 && (
+        <div className="tools__thumbs" role="tablist" aria-label="Examples">
           {tool.examples.map((e, j) => {
-            const barOn = j === exampleIdx;
+            const on = j === exampleIdx;
+            const isExVideo = !!e.videoSrc;
             return (
               <button
                 key={e.id}
                 type="button"
                 role="tab"
-                aria-selected={barOn}
-                className={`tools__bar ${barOn ? "is-active" : ""}`}
+                aria-selected={on}
+                className={`tools__thumb ${on ? "is-active" : ""}`}
                 onClick={(ev) => { ev.stopPropagation(); setExampleIdx(j); }}
+                aria-label={`Example ${j + 1} of ${total}`}
               >
-                <span className="tools__bar-line" />
+                {isExVideo ? (
+                  <span className="tools__thumb-video" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                      <path d="M8 5 L19 12 L8 19 Z" />
+                    </svg>
+                  </span>
+                ) : e.src ? (
+                  <img src={e.src} alt="" loading="lazy" />
+                ) : (
+                  <span className="tools__thumb-empty" aria-hidden="true" />
+                )}
               </button>
             );
           })}
@@ -1027,7 +1072,6 @@ function Tools() {
       { id: "flux-01", src: "images/nb-08.webp" },
       { id: "flux-02", src: "images/nb-09.webp" },
       { id: "flux-03", src: "images/nb-10.webp" },
-      { id: "flux-04" },
     ] },
     { key: "chatgpt-img",  name: "ChatGPT Image 2",      examples: [
       { id: "gpt-01", src: "images/gpt-01.webp" },

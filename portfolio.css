@@ -1583,41 +1583,97 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 }
 .tools__panel-num { color: var(--gold); }
 
-/* Slim progress-segment bars (no preview) for switching between examples */
-.tools__rail {
+/* Thumbnail rail — small previews of each example sitting under the
+   main media, replacing the previous thin-bar indicators. Always
+   one row: thumbs share the available width equally and shrink as
+   the count grows, never wrapping. */
+.tools__thumbs {
   display: flex;
   flex-wrap: nowrap;
   gap: 6px;
-  margin-top: -8px;
+  margin-top: 4px;
   width: 100%;
 }
-.tools__bar {
+.tools__thumb {
   appearance: none;
-  background: transparent;
-  border: 0;
-  padding: 10px 0;
+  background: rgba(7, 13, 12, 0.6);
+  border: 1px solid rgba(243, 234, 216, 0.12);
+  border-radius: 4px;
+  padding: 0;
   cursor: pointer;
-  display: flex;
-  align-items: center;
   flex: 1 1 0;
   min-width: 0;
-  height: 22px;
-  box-sizing: border-box;
+  aspect-ratio: 8 / 5;
+  overflow: hidden;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .25s ease, transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s;
 }
-.tools__bar-line {
-  display: block;
+.tools__thumb:hover {
+  border-color: rgba(201, 163, 92, 0.55);
+  transform: translateY(-1px);
+}
+.tools__thumb.is-active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), 0 6px 18px -8px rgba(231, 200, 133, 0.7);
+}
+.tools__thumb img {
   width: 100%;
-  height: 2px;
-  background: rgba(243, 234, 216, 0.14);
-  border-radius: 999px;
-  transition: background .3s cubic-bezier(.2,.7,.2,1), box-shadow .3s, opacity .3s;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
-.tools__bar:hover .tools__bar-line {
-  background: rgba(243, 234, 216, 0.32);
+.tools__thumb-video,
+.tools__thumb-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  background: linear-gradient(135deg, rgba(13, 77, 74, 0.25), rgba(7, 13, 12, 0.6));
+  width: 100%; height: 100%;
 }
-.tools__bar.is-active .tools__bar-line {
-  background: var(--gold);
-  box-shadow: 0 0 14px rgba(231, 200, 133, 0.5);
+
+/* Hover-revealed prev/next arrows on the main instrument media. */
+.tools__nav {
+  appearance: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(7, 13, 12, 0.65);
+  border: 1px solid rgba(243, 234, 216, 0.18);
+  color: var(--cream);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: opacity .25s ease, color .2s, border-color .2s, background .2s, transform .25s cubic-bezier(.2,.7,.2,1);
+}
+.tools__nav--prev { left: 12px; }
+.tools__nav--next { right: 12px; }
+.tools__panel-media:hover .tools__nav,
+.tools__nav:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.tools__nav:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+  background: rgba(201, 163, 92, 0.14);
+  transform: translateY(-50%) scale(1.06);
+}
+@media (hover: none) {
+  /* Touch devices: arrows are always visible (no hover state). */
+  .tools__nav { opacity: 1; pointer-events: auto; }
 }
 
 @media (max-width: 900px) {
