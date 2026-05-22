@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+
+# Local image-slot drag-and-drop state — site uses static `src` attributes
+# in the JSX so this sidecar is only useful for the in-editor experience.
+.image-slots.state.json
+
+# Build artifacts (none currently — pure static prototype)
+node_modules/
+dist/
+build/
+
+# Raw asset dumps from the original design bundle — none of these are
+# referenced by the code; they live here only as historical originals.
+uploads/
