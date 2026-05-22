@@ -1088,8 +1088,8 @@ function Tools() {
     { key: "seedance",     name: "Seedance",             examples: [{ id: "seedance-01", videoSrc: "videos/seedance.mp4" }] },
     { key: "elevenlabs",   name: "ElevenLabs",           examples: [{ id: "11-01", videoSrc: "videos/elevenlabs.mp4" }] },
     { key: "comfyui",      name: "ComfyUI",              examples: [{ id: "comfy-01", src: "logos/comfyui-mark.webp" }] },
-    { key: "n8n",          name: "Automations",          examples: [{ id: "n8n-01" }] },
-    { key: "agents",       name: "Custom AI Assistants", examples: [{ id: "agents-01" }] },
+    { key: "n8n",          name: "Automations",          examples: [{ id: "n8n-01", src: "logos/n8n.webp" }] },
+    { key: "agents",       name: "Custom AI Assistants", examples: [{ id: "agents-01", src: "logos/nous-research.webp" }] },
   ];
   const [active, setActive] = useState(0);
   const [exampleIdx, setExampleIdx] = useState(0);
