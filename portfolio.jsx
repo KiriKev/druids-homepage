@@ -1112,13 +1112,27 @@ function Builder() {
   return (
     <section className="builder" data-screen-label="06 Builder">
       <div className="builder__grid">
-        <div className="builder__copy" data-reveal>
-          <span className="eyebrow"><span className="eyebrow__dot"/> {t("builder.eyebrow")}</span>
-          <h2 className="display">
-            {t("builder.title.a")}<em>{t("builder.title.em")}</em>
-          </h2>
-          <p className="lede">{br(t("builder.lede1"))}</p>
-          <p className="lede">{br(t("builder.lede2"))}</p>
+        <div className="builder__left" data-reveal>
+          <div className="builder__copy">
+            <span className="eyebrow"><span className="eyebrow__dot"/> {t("builder.eyebrow")}</span>
+            <h2 className="display">
+              {t("builder.title.a")}<em>{t("builder.title.em")}</em>
+            </h2>
+            <p className="lede">{br(t("builder.lede1"))}</p>
+            <p className="lede">{br(t("builder.lede2"))}</p>
+          </div>
+          <div className="builder__rails">
+            <div className="builder__rails-label">{t("builder.railsLabel")}</div>
+            <div className="builder__rails-list">
+              {[1, 2, 3, 4].map((n, i) => (
+                <div className="rail" key={n} style={{ transitionDelay: `${i * 70}ms` }}>
+                  <span className="rail__k">{t(`builder.rail${n}.k`)}</span>
+                  <span className="rail__dots" />
+                  <span className="rail__v">{t(`builder.rail${n}.v`)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         <figure className="builder__media" data-reveal>
           <button
@@ -1142,19 +1156,6 @@ function Builder() {
           </button>
           <figcaption className="builder__media-cap">{t("builder.showcase.caption")}</figcaption>
         </figure>
-      </div>
-
-      <div className="builder__rails" data-reveal>
-        <div className="builder__rails-label">{t("builder.railsLabel")}</div>
-        <div className="builder__rails-list">
-          {[1, 2, 3, 4].map((n, i) => (
-            <div className="rail" key={n} style={{ transitionDelay: `${i * 70}ms` }}>
-              <span className="rail__k">{t(`builder.rail${n}.k`)}</span>
-              <span className="rail__dots" />
-              <span className="rail__v">{t(`builder.rail${n}.v`)}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );

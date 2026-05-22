@@ -1658,7 +1658,15 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   box-shadow: 0 30px 80px -20px rgba(0,0,0,0.8);
   animation: lbZoom .35s cubic-bezier(.2,.7,.2,1);
 }
-img.lb__media { cursor: zoom-out; }
+/* Images get scaled UP to fill the lightbox stage so a low-res
+   screenshot (e.g. Enki Art at 812×444) is actually readable. The
+   stage caps height; object-fit keeps the aspect ratio intact. */
+img.lb__media {
+  cursor: zoom-out;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 video.lb__media { cursor: default; outline: 1px solid var(--rule); }
 @keyframes lbZoom {
   from { opacity: 0; transform: scale(0.96); }
@@ -1721,10 +1729,12 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   display: grid;
   grid-template-columns: 1.15fr 1fr;
   gap: clamp(32px, 4vw, 56px);
-  max-width: var(--maxw);
+  /* Narrower than the page maxw so the card visually centers with
+     air on both sides — the section grid above can stretch to the
+     full maxw without forcing the award to follow. */
+  max-width: min(1100px, calc(100% - 2 * var(--gutter)));
   margin: 48px auto 0;
   padding: clamp(28px, 3vw, 40px) clamp(28px, 3.5vw, 48px);
-  margin-inline: var(--gutter);
   border: 1px solid rgba(201, 163, 92, 0.22);
   border-radius: 4px;
   background:
@@ -1933,12 +1943,21 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   max-width: var(--maxw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
+  grid-template-columns: 1fr 1.1fr;
   gap: clamp(40px, 6vw, 100px);
   align-items: start;
 }
 .builder__copy .display { margin-bottom: 28px; }
 .builder__copy .lede { margin: 0 0 18px; }
+
+/* Left column wraps the copy and the under-the-hood rails table so
+   they share the same column while the Enki Art screenshot stretches
+   along the full height of the right column. */
+.builder__left {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.5vw, 48px);
+}
 
 .builder__media {
   margin: 0;
@@ -2002,14 +2021,13 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   opacity: 0.8;
 }
 
+/* Compact left-column table — sits under the copy, not as its own
+   full-width strip below the grid. */
 .builder__rails {
-  max-width: var(--maxw);
-  margin: clamp(40px, 5vw, 72px) auto 0;
-  display: grid;
-  grid-template-columns: minmax(140px, 220px) 1fr;
-  gap: clamp(24px, 3vw, 56px);
-  align-items: start;
-  padding-top: clamp(24px, 3vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: clamp(20px, 2.5vw, 32px);
   border-top: 1px solid var(--rule);
 }
 .builder__rails-label {
@@ -2018,12 +2036,11 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--gold);
-  padding-top: 18px;
 }
 .builder__rails-list { display: flex; flex-direction: column; gap: 0; }
 .rail {
   display: flex; align-items: baseline; gap: 16px;
-  padding: 22px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--rule);
   opacity: 0;
   transform: translateY(12px);
@@ -2062,16 +2079,12 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
     grid-template-columns: 1fr;
     gap: clamp(32px, 6vw, 50px);
   }
+  .builder__left { gap: clamp(28px, 6vw, 40px); }
   .builder__media {
     position: static;
     top: auto;
   }
   .builder__media image-slot { height: clamp(220px, 56vw, 380px); }
-  .builder__rails {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-  .builder__rails-label { padding-top: 0; }
   .rail__v { text-align: left; max-width: 100%; }
   .rail__dots { display: none; }
 }
