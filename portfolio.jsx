@@ -1135,25 +1135,11 @@ function Builder() {
           </div>
         </div>
         <figure className="builder__media" data-reveal>
-          <button
-            type="button"
-            className="builder__media-btn"
-            onClick={() => openLightbox && openLightbox([{ type: "image", src: ENKI_IMG }], 0)}
-            aria-label={t("builder.showcase.placeholder")}
-          >
-            <img
-              className="builder__media-img"
-              src={ENKI_IMG}
-              alt={t("builder.showcase.placeholder")}
-            />
-            <span className="builder__media-zoom" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="7" />
-                <path d="M16.5 16.5 L21 21" />
-                <path d="M11 8 V14 M8 11 H14" />
-              </svg>
-            </span>
-          </button>
+          <img
+            className="builder__media-img"
+            src={ENKI_IMG}
+            alt={t("builder.showcase.placeholder")}
+          />
           <figcaption className="builder__media-cap">{t("builder.showcase.caption")}</figcaption>
         </figure>
       </div>

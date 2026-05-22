@@ -1969,48 +1969,13 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
 }
 /* The image hugs its own intrinsic ratio — no fixed-height frame, no
    gradient padding. Border traces the actual picture edge. */
-.builder__media-btn {
-  appearance: none;
-  display: block;
-  position: relative;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  background: transparent;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  cursor: zoom-in;
-  overflow: hidden;
-  transition: border-color .25s ease, transform .3s cubic-bezier(.2,.7,.2,1);
-}
-.builder__media-btn:hover {
-  border-color: rgba(201, 163, 92, 0.55);
-}
 .builder__media-img {
   display: block;
   width: 100%;
   height: auto;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
   /* Image carries its own ratio; the wrapper sizes to it exactly. */
-}
-.builder__media-zoom {
-  position: absolute;
-  right: 12px; bottom: 12px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(7, 13, 12, 0.65);
-  border: 1px solid rgba(243, 234, 216, 0.18);
-  color: var(--cream);
-  display: inline-flex; align-items: center; justify-content: center;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  transition: color .2s, border-color .2s, background .2s, transform .25s cubic-bezier(.2,.7,.2,1);
-}
-.builder__media-btn:hover .builder__media-zoom {
-  color: var(--gold);
-  border-color: var(--gold);
-  background: rgba(201, 163, 92, 0.14);
-  transform: scale(1.05);
 }
 .builder__media-cap {
   font-family: var(--ff-mono);
