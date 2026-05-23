@@ -45,6 +45,17 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Description is required" });
   }
 
+  const contactValue = String(body.contactValue || "").trim();
+  if (!contactValue) {
+    return res.status(400).json({ error: "Contact is required" });
+  }
+  const contactMethod = String(body.contactMethod || "email").toLowerCase();
+  const contactLabel = {
+    email: "Email",
+    x: "X",
+    telegram: "Telegram",
+  }[contactMethod] || "Contact";
+
   // Build a clean, scannable email body.
   const lines = [];
   if (body.service) lines.push(`Service: ${body.service}`);
@@ -54,8 +65,7 @@ export default async function handler(req, res) {
     }
   }
   if (body.budget) lines.push(`Budget: ${body.budget}`);
-  if (body.email) lines.push(`Email: ${body.email}`);
-  if (body.contact) lines.push(`X / Telegram: ${body.contact}`);
+  lines.push(`${contactLabel}: ${contactValue}`);
   if (body.lang) lines.push(`Language: ${body.lang}`);
   lines.push("");
   lines.push("Description:");
@@ -83,9 +93,10 @@ export default async function handler(req, res) {
         // account. Until a custom domain is verified, that's the
         // account's signup address.
         to: ["kirikev4d@gmail.com"],
-        // If they gave us their email, let "Reply" go straight back
-        // to them instead of bouncing off the onboarding@ address.
-        reply_to: body.email && /@/.test(body.email) ? body.email : undefined,
+        // Set Reply-To only when the visitor chose Email as their
+        // contact method — X/Telegram handles aren't routable from
+        // the inbox so leave Reply-To off in that case.
+        reply_to: contactMethod === "email" && /@/.test(contactValue) ? contactValue : undefined,
         subject,
         text,
         html,

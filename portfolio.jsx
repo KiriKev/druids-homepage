@@ -1370,12 +1370,17 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
     for (const q of qList) {
       answers[t(`brief.${service}.${q.id}.label`)] = form[q.id] || "";
     }
+    const contactMethod = form.contactMethod || "email";
+    const contactValue = (form.contactValue || "").trim();
     return {
       service: t(`brief.service.${service}`),
       answers,
       budget: form.budget || "",
-      email: form.email || "",
-      contact: form.contact || "",
+      contactMethod,
+      contactValue,
+      // Keep `email` populated when the chosen method is email so the
+      // server can set Reply-To. Otherwise leave it empty.
+      email: contactMethod === "email" ? contactValue : "",
       description: form.description || "",
       website: form.website || "", // honeypot — bots fill this, humans don't see it
       lang,
@@ -1386,6 +1391,7 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
     e.preventDefault();
     if (!service) return;
     if (!form.description || !form.description.trim()) return;
+    if (!form.contactValue || !form.contactValue.trim()) return;
     setStatus("sending");
     setErrorMessage("");
     try {
@@ -1416,12 +1422,16 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
   // structured brief.
   const fallbackToMailto = () => {
     const payload = buildPayload();
+    const contactLabel = {
+      email: "Email",
+      x: "X",
+      telegram: "Telegram",
+    }[payload.contactMethod] || "Contact";
     const lines = [
       `Service: ${payload.service}`,
       ...Object.entries(payload.answers).map(([k, v]) => `${k}: ${v || "—"}`),
       `Budget: ${payload.budget || "—"}`,
-      `Email: ${payload.email || "—"}`,
-      `X / Telegram: ${payload.contact || "—"}`,
+      `${contactLabel}: ${payload.contactValue || "—"}`,
       "",
       "Description:",
       payload.description,
@@ -1542,29 +1552,32 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
 
               <div className="brief__row">
                 <div className="brief__field">
-                  <label className="brief__label" htmlFor="brief-email">
-                    {t("brief.email.label")} <span className="brief__optional">{t("brief.optional")}</span>
+                  <label className="brief__label" htmlFor="brief-contact-method">
+                    {t("brief.contact.methodLabel")} <span className="brief__required">{t("brief.required")}</span>
                   </label>
-                  <input
-                    id="brief-email"
-                    className="brief__input"
-                    type="email"
-                    placeholder={t("brief.email.placeholder")}
-                    value={form.email || ""}
-                    onChange={(e) => setField("email", e.target.value)}
-                  />
+                  <select
+                    id="brief-contact-method"
+                    className="brief__input brief__input--select"
+                    value={form.contactMethod || "email"}
+                    onChange={(e) => setField("contactMethod", e.target.value)}
+                  >
+                    <option value="email">{t("brief.contact.email")}</option>
+                    <option value="x">{t("brief.contact.x")}</option>
+                    <option value="telegram">{t("brief.contact.telegram")}</option>
+                  </select>
                 </div>
                 <div className="brief__field">
-                  <label className="brief__label" htmlFor="brief-contact">
-                    {t("brief.contact.label")} <span className="brief__optional">{t("brief.optional")}</span>
+                  <label className="brief__label" htmlFor="brief-contact-value">
+                    {t("brief.contact.valueLabel")} <span className="brief__required">{t("brief.required")}</span>
                   </label>
                   <input
-                    id="brief-contact"
+                    id="brief-contact-value"
                     className="brief__input"
-                    type="text"
-                    placeholder={t("brief.contact.placeholder")}
-                    value={form.contact || ""}
-                    onChange={(e) => setField("contact", e.target.value)}
+                    type={(form.contactMethod || "email") === "email" ? "email" : "text"}
+                    required
+                    placeholder={t(`brief.contact.placeholder.${form.contactMethod || "email"}`)}
+                    value={form.contactValue || ""}
+                    onChange={(e) => setField("contactValue", e.target.value)}
                   />
                 </div>
               </div>
