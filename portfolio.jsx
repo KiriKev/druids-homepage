@@ -1399,7 +1399,10 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
         setStatus("sent");
       } else {
         const j = await r.json().catch(() => null);
-        setErrorMessage(j?.error || "");
+        // Show the upstream detail when present — extremely helpful
+        // during initial setup to spot Resend account/domain issues.
+        const parts = [j?.error, j?.upstream || j?.detail].filter(Boolean);
+        setErrorMessage(parts.join(" · "));
         setStatus("error");
       }
     } catch (err) {
@@ -1605,7 +1608,10 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
                 </button>
                 {status === "error" && (
                   <div className="brief-modal__error" role="alert">
-                    {t("brief.error")}
+                    <strong>{t("brief.error")}</strong>
+                    {errorMessage && (
+                      <span className="brief-modal__error-detail">{errorMessage}</span>
+                    )}
                     <button
                       type="button"
                       className="brief-modal__alt"

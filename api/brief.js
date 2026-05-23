@@ -91,12 +91,21 @@ export default async function handler(req, res) {
     if (!r.ok) {
       const errText = await r.text().catch(() => "");
       console.error("[api/brief] Resend non-OK:", r.status, errText);
-      return res.status(502).json({ error: "Email service rejected the message" });
+      // Surface the upstream message so the front-end can show it
+      // to you during setup. Resend's errors are short and safe to
+      // expose (e.g. "Domain is not verified", "Invalid `to` field").
+      let upstream = errText;
+      try { upstream = JSON.parse(errText)?.message || errText; } catch (_) {}
+      return res.status(502).json({
+        error: `Email service rejected the message`,
+        upstream,
+        status: r.status,
+      });
     }
     return res.status(200).json({ ok: true });
   } catch (e) {
     console.error("[api/brief] send failed:", e);
-    return res.status(500).json({ error: "Server error" });
+    return res.status(500).json({ error: "Server error", detail: String(e && e.message ? e.message : e) });
   }
 }
 
