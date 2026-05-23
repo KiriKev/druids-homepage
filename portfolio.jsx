@@ -1300,10 +1300,9 @@ function CTA({ onChat }) {
 // ─── Project brief (modal) ────────────────────────────────────────
 // Opened by every "Let's chat" button. Branched intake form: pick
 // a topic, answer 1–2 specifics, optional budget/email/handle,
-// mandatory description. Submits via mailto:kgermin@tuta.io with a
-// structured body so the inbox shows exactly what the visitor wants
-// (animation vs automation vs DeFi vs copy). A secondary
-// "book a call instead" link exposes the Calendly URL.
+// mandatory description. Posts to /api/brief, which sends a real
+// email via Resend. If the API call fails, the modal exposes a
+// mailto: fallback so the visitor still has a path to the inbox.
 
 const BRIEF_SERVICES = ["animations", "copywriting", "automations", "defi"];
 
@@ -1325,7 +1324,7 @@ const BRIEF_QUESTIONS = {
   ],
 };
 
-const BRIEF_EMAIL = "kgermin@tuta.io";
+const BRIEF_EMAIL = "kirikev4d@gmail.com";
 
 function ProjectBriefModal({ open, onClose, calendlyUrl }) {
   const t = useT();

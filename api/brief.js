@@ -78,7 +78,11 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: "Druids Brief <onboarding@resend.dev>",
-        to: ["kgermin@tuta.io"],
+        // On Resend's free tier the shared onboarding@resend.dev sender
+        // can only deliver TO the email address that owns the Resend
+        // account. Until a custom domain is verified, that's the
+        // account's signup address.
+        to: ["kirikev4d@gmail.com"],
         // If they gave us their email, let "Reply" go straight back
         // to them instead of bouncing off the onboarding@ address.
         reply_to: body.email && /@/.test(body.email) ? body.email : undefined,
