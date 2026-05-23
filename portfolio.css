@@ -2348,13 +2348,6 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   font-style: italic;
   color: var(--gold);
 }
-.brief-modal__lede {
-  font-size: clamp(14px, 1vw, 16px);
-  line-height: 1.6;
-  color: var(--cream-dim);
-  max-width: 52ch;
-  margin: 0 auto;
-}
 .brief-modal__actions {
   display: flex;
   flex-wrap: wrap;

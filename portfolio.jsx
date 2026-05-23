@@ -1405,7 +1405,6 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
           <h2 id="brief-modal-title" className="brief-modal__title">
             {t("brief.title.a")}<em>{t("brief.title.em")}</em>
           </h2>
-          <p className="brief-modal__lede">{br(t("brief.lede"))}</p>
         </header>
 
         <form className="brief__form" onSubmit={onSubmit}>
