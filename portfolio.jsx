@@ -1454,9 +1454,13 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
         </button>
 
         <header className="brief-modal__head">
-          <span className="eyebrow"><span className="eyebrow__dot" /> {t("brief.eyebrow")}</span>
+          {status !== "sent" && (
+            <span className="eyebrow"><span className="eyebrow__dot" /> {t("brief.eyebrow")}</span>
+          )}
           <h2 id="brief-modal-title" className="brief-modal__title">
-            {t("brief.title.a")}<em>{t("brief.title.em")}</em>
+            {status === "sent"
+              ? t("brief.sent.title")
+              : (<>{t("brief.title.a")}<em>{t("brief.title.em")}</em></>)}
           </h2>
         </header>
 
@@ -1631,7 +1635,6 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
                   <path d="M4 12 L10 18 L20 6" />
                 </svg>
               </span>
-              <h3 className="brief-modal__success-title">{t("brief.sent.title")}</h3>
               <p className="brief-modal__success-body">{t("brief.sent.body")}</p>
               <button type="button" className="btn btn--ghost" onClick={onClose}>
                 {t("brief.close")}

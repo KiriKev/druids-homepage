@@ -2583,15 +2583,6 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   color: var(--gold);
   box-shadow: 0 0 0 6px rgba(201, 163, 92, 0.06);
 }
-.brief-modal__success-title {
-  font-family: var(--ff-display);
-  font-weight: 400;
-  font-size: clamp(24px, 2.6vw, 32px);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  margin: 0;
-  color: var(--cream);
-}
 .brief-modal__success-body {
   font-size: 15px;
   line-height: 1.55;

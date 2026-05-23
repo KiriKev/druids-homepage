@@ -184,8 +184,8 @@ const TR = {
     "brief.sending": "Sending…",
     "brief.error": "Couldn’t send right now.",
     "brief.fallback": "Open mail client instead",
-    "brief.sent.title": "Brief received.",
-    "brief.sent.body": "I’ll come back to you within 24 hours.",
+    "brief.sent.title": "Thanks for reaching out!",
+    "brief.sent.body": "I’ll reply to you shortly.",
     "brief.close": "Close",
 
     "brief.service.label": "What’s on your mind?",
@@ -432,8 +432,8 @@ const TR = {
     "brief.sending": "Wird gesendet…",
     "brief.error": "Senden hat gerade nicht geklappt.",
     "brief.fallback": "Stattdessen E-Mail-Programm öffnen",
-    "brief.sent.title": "Brief angekommen.",
-    "brief.sent.body": "Ich melde mich innerhalb von 24 Stunden zurück.",
+    "brief.sent.title": "Danke für deine Nachricht!",
+    "brief.sent.body": "Ich melde mich gleich bei dir zurück.",
     "brief.close": "Schließen",
 
     "brief.service.label": "Was beschäftigt dich gerade?",
@@ -679,8 +679,8 @@ const TR = {
     "brief.sending": "Отправляется…",
     "brief.error": "Не получилось отправить.",
     "brief.fallback": "Открыть почтовую программу",
-    "brief.sent.title": "Бриф получен.",
-    "brief.sent.body": "Я свяжусь с тобой в течение 24 часов.",
+    "brief.sent.title": "Спасибо, что написал!",
+    "brief.sent.body": "Скоро отвечу.",
     "brief.close": "Закрыть",
 
     "brief.service.label": "Что тебя сейчас занимает?",
