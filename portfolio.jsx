@@ -1329,8 +1329,12 @@ const BRIEF_EMAIL = "kgermin@tuta.io";
 
 function ProjectBriefModal({ open, onClose, calendlyUrl }) {
   const t = useT();
+  const [lang] = useLang();
   const [service, setService] = useState(null);
   const [form, setForm] = useState({});
+  // 'idle' | 'sending' | 'sent' | 'error'
+  const [status, setStatus] = useState("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const dialogRef = useRef(null);
   const setField = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
@@ -1351,29 +1355,76 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
   useEffect(() => {
     if (!open) {
       // Defer reset so closing transitions don't flash content.
-      const id = setTimeout(() => { setService(null); setForm({}); }, 200);
+      const id = setTimeout(() => {
+        setService(null);
+        setForm({});
+        setStatus("idle");
+        setErrorMessage("");
+      }, 200);
       return () => clearTimeout(id);
     }
   }, [open]);
 
-  const onSubmit = (e) => {
-    e.preventDefault();
-    if (!form.description || !form.description.trim()) return;
+  const buildPayload = () => {
     const qList = BRIEF_QUESTIONS[service] || [];
+    const answers = {};
+    for (const q of qList) {
+      answers[t(`brief.${service}.${q.id}.label`)] = form[q.id] || "";
+    }
+    return {
+      service: t(`brief.service.${service}`),
+      answers,
+      budget: form.budget || "",
+      email: form.email || "",
+      contact: form.contact || "",
+      description: form.description || "",
+      website: form.website || "", // honeypot — bots fill this, humans don't see it
+      lang,
+    };
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!service) return;
+    if (!form.description || !form.description.trim()) return;
+    setStatus("sending");
+    setErrorMessage("");
+    try {
+      const r = await fetch("/api/brief", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildPayload()),
+      });
+      if (r.ok) {
+        setStatus("sent");
+      } else {
+        const j = await r.json().catch(() => null);
+        setErrorMessage(j?.error || "");
+        setStatus("error");
+      }
+    } catch (err) {
+      setErrorMessage(String(err && err.message ? err.message : err));
+      setStatus("error");
+    }
+  };
+
+  // Fallback for when the API isn't reachable yet (e.g. local
+  // http-server without `vercel dev` running, or the env var
+  // hasn't been set). Opens the user's mail client with the same
+  // structured brief.
+  const fallbackToMailto = () => {
+    const payload = buildPayload();
     const lines = [
-      `Service: ${t(`brief.service.${service}`)}`,
-      ...qList.map((q) => {
-        const label = t(`brief.${service}.${q.id}.label`);
-        return `${label}: ${form[q.id] || "—"}`;
-      }),
-      `${t("brief.budget.label")}: ${form.budget || "—"}`,
-      `${t("brief.email.label")}: ${form.email || "—"}`,
-      `${t("brief.contact.label")}: ${form.contact || "—"}`,
+      `Service: ${payload.service}`,
+      ...Object.entries(payload.answers).map(([k, v]) => `${k}: ${v || "—"}`),
+      `Budget: ${payload.budget || "—"}`,
+      `Email: ${payload.email || "—"}`,
+      `X / Telegram: ${payload.contact || "—"}`,
       "",
-      `${t("brief.description.label")}:`,
-      form.description,
+      "Description:",
+      payload.description,
     ];
-    const subject = encodeURIComponent(`Druids brief — ${t(`brief.service.${service}`)}`);
+    const subject = encodeURIComponent(`Druids brief — ${payload.service}`);
     const body = encodeURIComponent(lines.join("\n"));
     window.location.href = `mailto:${BRIEF_EMAIL}?subject=${subject}&body=${body}`;
   };
@@ -1408,23 +1459,25 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
         </header>
 
         <form className="brief__form" onSubmit={onSubmit}>
-          <div className="brief__field">
-            <label className="brief__label">{t("brief.service.label")}</label>
-            <div className="brief__choices">
-              {BRIEF_SERVICES.map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={`brief__choice ${service === s ? "is-active" : ""}`}
-                  onClick={() => { setService(s); setForm({}); }}
-                >
-                  {t(`brief.service.${s}`)}
-                </button>
-              ))}
+          {status !== "sent" && (
+            <div className="brief__field">
+              <label className="brief__label">{t("brief.service.label")}</label>
+              <div className="brief__choices">
+                {BRIEF_SERVICES.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={`brief__choice ${service === s ? "is-active" : ""}`}
+                    onClick={() => { setService(s); setForm({}); }}
+                  >
+                    {t(`brief.service.${s}`)}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {service && (
+          {service && status !== "sent" && (
             <div className="brief__panel" key={service}>
               {(BRIEF_QUESTIONS[service] || []).map((q) => {
                 const labelKey = `brief.${service}.${q.id}.label`;
@@ -1525,11 +1578,59 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
                 />
               </div>
 
-              <div className="brief-modal__actions">
-                <button type="submit" className="btn btn--solid btn--lg brief__submit">
-                  {t("brief.submit")} <span className="btn__arrow">→</span>
-                </button>
+              {/* Honeypot — visually hidden, bots fill it, humans don't. */}
+              <div className="brief__honeypot" aria-hidden="true">
+                <label htmlFor="brief-website">Website (leave empty)</label>
+                <input
+                  id="brief-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={form.website || ""}
+                  onChange={(e) => setField("website", e.target.value)}
+                />
               </div>
+
+              <div className="brief-modal__actions">
+                <button
+                  type="submit"
+                  className="btn btn--solid btn--lg brief__submit"
+                  disabled={status === "sending"}
+                >
+                  {status === "sending"
+                    ? t("brief.sending")
+                    : t("brief.submit")}{" "}
+                  <span className="btn__arrow">→</span>
+                </button>
+                {status === "error" && (
+                  <div className="brief-modal__error" role="alert">
+                    {t("brief.error")}
+                    <button
+                      type="button"
+                      className="brief-modal__alt"
+                      onClick={fallbackToMailto}
+                    >
+                      {t("brief.fallback")}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {status === "sent" && (
+            <div className="brief-modal__success" role="status">
+              <span className="brief-modal__success-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12 L10 18 L20 6" />
+                </svg>
+              </span>
+              <h3 className="brief-modal__success-title">{t("brief.sent.title")}</h3>
+              <p className="brief-modal__success-body">{t("brief.sent.body")}</p>
+              <button type="button" className="btn btn--ghost" onClick={onClose}>
+                {t("brief.close")}
+              </button>
             </div>
           )}
         </form>

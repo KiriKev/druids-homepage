@@ -2503,6 +2503,91 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
 }
 
 .brief__submit { margin: 0; }
+.brief__submit[disabled] { opacity: 0.6; cursor: progress; }
+
+/* Honeypot — visually removed, still picked up by bots. */
+.brief__honeypot {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.brief-modal__error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e08;
+  background: rgba(224, 0, 80, 0.08);
+  border: 1px solid rgba(224, 0, 80, 0.35);
+  border-radius: 6px;
+  padding: 10px 14px;
+  width: 100%;
+}
+.brief-modal__error .brief-modal__alt {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 4px 0;
+  color: var(--cream);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 10.5px;
+}
+.brief-modal__error .brief-modal__alt:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+.brief-modal__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 8px;
+  text-align: center;
+  animation: briefSuccessIn .35s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes briefSuccessIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+.brief-modal__success-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(201, 163, 92, 0.12);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 0 6px rgba(201, 163, 92, 0.06);
+}
+.brief-modal__success-title {
+  font-family: var(--ff-display);
+  font-weight: 400;
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--cream);
+}
+.brief-modal__success-body {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--cream-dim);
+  max-width: 36ch;
+  margin: 0;
+}
+.brief-modal__success .btn--ghost {
+  margin-top: 8px;
+}
 
 @media (max-width: 700px) {
   .brief__row { grid-template-columns: 1fr; }
