@@ -1102,7 +1102,7 @@ function Tools() {
       <div className="tools__head" data-reveal>
         <span className="eyebrow"><span className="eyebrow__dot"/> {t("tools.eyebrow")}</span>
         <h2 className="display tools__display">{t("tools.title")}</h2>
-        <p className="lede">{t("tools.lede")}</p>
+        <p className="lede">{br(t("tools.lede"))}</p>
       </div>
 
       <div className="tools__layout">
