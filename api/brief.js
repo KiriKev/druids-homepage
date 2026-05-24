@@ -77,7 +77,7 @@ export default async function handler(req, res) {
     .map((l) => `<div>${escapeHtml(l) || "&nbsp;"}</div>`)
     .join("");
 
-  const subject = `Druids brief — ${body.service || "general"}`;
+  const subject = `Kevin Germin brief — ${body.service || "general"}`;
 
   try {
     const r = await fetch("https://api.resend.com/emails", {
@@ -87,7 +87,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Druids Brief <onboarding@resend.dev>",
+        from: "Kevin Germin Brief <onboarding@resend.dev>",
         // On Resend's free tier the shared onboarding@resend.dev sender
         // can only deliver TO the email address that owns the Resend
         // account. Until a custom domain is verified, that's the

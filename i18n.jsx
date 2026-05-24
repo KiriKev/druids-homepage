@@ -170,7 +170,7 @@ const TR = {
     "cta.meta2": "Replies within 24h",
     "cta.meta3": "Berlin · worldwide",
 
-    "footer.name": "Druids",
+    "footer.name": "Kevin Germin",
     "footer.role": "Visual Artist, Copywriter & Consultant",
 
     "brief.eyebrow": "Let’s chat",
@@ -421,7 +421,7 @@ const TR = {
     "cta.meta2": "Antwort innerhalb von 24 Stunden",
     "cta.meta3": "Berlin · weltweit tätig",
 
-    "footer.name": "Druids",
+    "footer.name": "Kevin Germin",
     "footer.role": "Visueller Künstler, Texter & Berater",
 
     "brief.eyebrow": "Lass uns reden",
@@ -671,7 +671,7 @@ const TR = {
     "cta.meta2": "Ответ в течение 24 часов",
     "cta.meta3": "Берлин · работаю по всему миру",
 
-    "footer.name": "Druids",
+    "footer.name": "Kevin Germin",
     "footer.role": "Визуальный художник, автор текстов и консультант",
 
     "brief.eyebrow": "Поговорим",

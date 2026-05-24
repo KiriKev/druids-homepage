@@ -381,9 +381,9 @@ function Nav({ onChat }) {
     <nav className={`nav ${scrolled ? "nav--scrolled" : ""}`}>
       <a href="#top" className="nav__logo" data-comment-anchor="logo">
         <span className="nav__logo-mark">
-          <img src="logos/druids-mark.webp" alt="" />
+          <img src="logos/kev-mark.webp" alt="" />
         </span>
-        <span className="nav__logo-text">Druids</span>
+        <span className="nav__logo-text">Kevin Germin</span>
       </a>
       <ul className="nav__links">
         <li><a href="#services">{t("nav.services")}</a></li>
@@ -1187,33 +1187,23 @@ function Builder() {
           <div className="builder__chains" aria-label="Launching on">
             <span className="builder__chains-label">{t("builder.chainsLabel")}</span>
             <ul className="builder__chains-list">
+              {/* Each chip is the brand's own lockup (mark + wordmark
+                  in the brand's typeface). No website-font wordmark
+                  labels — the brand asset speaks for itself. */}
               <li className="builder__chain" title="Solana">
-                <span className="builder__chain-mark" aria-hidden="true">
-                  {/* Official Solana mark geometry (rounded-corner
-                      parallelograms with proper '/' slant). Filled with
-                      currentColor so it inherits the off-white treatment. */}
-                  <svg viewBox="0 0 397.7 311.7" fill="currentColor">
-                    <path d="M64.6,237.9c2.4-2.4,5.7-3.8,9.2-3.8h317.4c5.8,0,8.7,7,4.6,11.1l-62.7,62.7c-2.4,2.4-5.7,3.8-9.2,3.8H6.5c-5.8,0-8.7-7-4.6-11.1L64.6,237.9z" />
-                    <path d="M64.6,3.8C67.1,1.4,70.4,0,73.8,0h317.4c5.8,0,8.7,7,4.6,11.1l-62.7,62.7c-2.4,2.4-5.7,3.8-9.2,3.8H6.5c-5.8,0-8.7-7-4.6-11.1L64.6,3.8z" />
-                    <path d="M333.1,120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8,0-8.7,7-4.6,11.1l62.7,62.7c2.4,2.4,5.7,3.8,9.2,3.8h317.4c5.8,0,8.7-7,4.6-11.1L333.1,120.1z" />
-                  </svg>
+                <span className="builder__chain-lockup builder__chain-lockup--image builder__chain-lockup--mono" aria-label="Solana">
+                  <img src="logos/solana.svg" alt="" />
                 </span>
-                <span className="builder__chain-name">Solana</span>
               </li>
               <li className="builder__chain" title="Base">
-                <span className="builder__chain-mark builder__chain-mark--image" aria-hidden="true">
+                <span className="builder__chain-lockup builder__chain-lockup--image" aria-label="Base">
                   <img src="logos/base.webp" alt="" />
                 </span>
               </li>
               <li className="builder__chain" title="LUKSO">
-                <span className="builder__chain-mark builder__chain-mark--image builder__chain-mark--mono" aria-hidden="true">
-                  {/* Cropped from the official LUKSO lockup — just the
-                      hexagon-in-hexagon mark, no wordmark (we add LUKSO
-                      as a text label below). Mono filter flattens the
-                      brand pink to off-white. */}
+                <span className="builder__chain-lockup builder__chain-lockup--image builder__chain-lockup--mono" aria-label="LUKSO">
                   <img src="logos/lukso.webp" alt="" />
                 </span>
-                <span className="builder__chain-name">LUKSO</span>
               </li>
             </ul>
           </div>
@@ -1464,7 +1454,7 @@ function ProjectBriefModal({ open, onClose, calendlyUrl }) {
       "Description:",
       payload.description,
     ];
-    const subject = encodeURIComponent(`Druids brief — ${payload.service}`);
+    const subject = encodeURIComponent(`Kevin Germin brief — ${payload.service}`);
     const body = encodeURIComponent(lines.join("\n"));
     window.location.href = `mailto:${BRIEF_EMAIL}?subject=${subject}&body=${body}`;
   };
@@ -1733,7 +1723,7 @@ function Footer() {
     <footer className="footer">
       <div className="footer__row">
         <div className="footer__brand">
-          <span className="footer__mark"><img src="logos/druids-mark.webp" alt="" /></span>
+          <span className="footer__mark"><img src="logos/kev-mark.webp" alt="" /></span>
           <div className="footer__brand-text">
             <span className="footer__name">{t("footer.name")}</span>
             <span className="footer__role">{t("footer.role")}</span>

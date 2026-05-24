@@ -484,8 +484,8 @@ html { scroll-behavior: smooth; }
 }
 @media (max-width: 560px) {
   .nav__right { gap: 8px; }
-  /* Hide the Druids wordmark below 560px; the gold mark stays
-     visible as the brand anchor. */
+  /* Hide the "Kevin Germin" wordmark below 560px; the gold mark
+     stays visible as the brand anchor. */
   .nav__logo-text { display: none; }
   /* Tighten further for very narrow viewports. */
   .nav .btn--ghost { padding: 7px 12px; font-size: 11px; }
@@ -2093,57 +2093,33 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
 .builder__chain {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   color: var(--cream);
   opacity: 0.85;
   transition: opacity .2s;
 }
 .builder__chain:hover { opacity: 1; }
-.builder__chain-mark {
+/* Full brand lockup — mark + wordmark in the brand's own typeface,
+   not the website font. Each chain's image already includes the
+   correct wordmark, so all we do here is size them to a common
+   visual height for the row. */
+.builder__chain-lockup {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  /* Square box gives the LUKSO hexagon room while still cropping the
-     wider Solana / Base lockups to a consistent visual weight. */
-  width: 30px;
-  height: 30px;
+  height: 22px;
   color: var(--cream);
 }
-.builder__chain-mark svg {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-}
-.builder__chain-mark--image {
-  /* Base lockup is wider than the square box — let it size itself. */
-  width: auto;
-  height: 22px;
-}
-.builder__chain-mark--image img {
+.builder__chain-lockup--image img {
   display: block;
   height: 100%;
   width: auto;
   object-fit: contain;
 }
-.builder__chain-mark--mono img {
-  /* Flatten brand colour to off-white so the LUKSO pink (and any
-     other colourful chain mark we add later) matches the worked-for
-     marquee aesthetic. */
+.builder__chain-lockup--mono img {
+  /* Flatten brand colour (Solana gradient, LUKSO pink, etc.) to
+     off-white so the row reads as a coherent set rather than a
+     fruit salad of brand palettes fighting the cream/gold theme. */
   filter: brightness(0) invert(1);
   opacity: 0.92;
-}
-.builder__chain-mark--mono {
-  width: 28px;
-  height: 28px;
-}
-.builder__chain-name {
-  font-family: var(--ff-mono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--cream);
 }
 
 /* Compact left-column table — sits under the copy, not as its own
