@@ -838,7 +838,6 @@ function Work() {
           <span className="eyebrow"><span className="eyebrow__dot"/> {t("work.eyebrow")}</span>
           <h2 className="display">{t("work.title")}</h2>
         </div>
-        <p className="work__note">{br(t("work.note"))}</p>
       </div>
       <p className="work__disclaimer" data-reveal>
         <span className="work__disclaimer-mark" aria-hidden="true" />
@@ -1185,6 +1184,36 @@ function Builder() {
             alt={t("builder.showcase.placeholder")}
           />
           <figcaption className="builder__media-cap">{t("builder.showcase.caption")}</figcaption>
+          <div className="builder__chains" aria-label="Launching on">
+            <span className="builder__chains-label">{t("builder.chainsLabel")}</span>
+            <ul className="builder__chains-list">
+              <li className="builder__chain" title="Solana">
+                <span className="builder__chain-mark" aria-hidden="true">
+                  <svg viewBox="0 0 64 50" width="34" height="26" fill="currentColor">
+                    <path d="M9.4 39.1 L52.4 39.1 L62.6 49.3 L19.6 49.3 Z"/>
+                    <path d="M9.4 0 L52.4 0 L62.6 10.2 L19.6 10.2 Z"/>
+                    <path d="M62.6 19.6 L19.6 19.6 L9.4 29.8 L52.4 29.8 Z"/>
+                  </svg>
+                </span>
+                <span className="builder__chain-name">Solana</span>
+              </li>
+              <li className="builder__chain" title="Base">
+                <span className="builder__chain-mark builder__chain-mark--image" aria-hidden="true">
+                  <img src="logos/base.webp" alt="" />
+                </span>
+              </li>
+              <li className="builder__chain" title="LUKSO">
+                <span className="builder__chain-mark" aria-hidden="true">
+                  <svg viewBox="0 0 64 64" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 22 Q22 12 32 22 T50 22"/>
+                    <path d="M14 32 Q22 22 32 32 T50 32"/>
+                    <path d="M14 42 Q22 32 32 42 T50 42"/>
+                  </svg>
+                </span>
+                <span className="builder__chain-name">LUKSO</span>
+              </li>
+            </ul>
+          </div>
         </figure>
       </div>
     </section>
@@ -1286,11 +1315,7 @@ function CTA({ onChat }) {
           {t("cta.button")} <span className="btn__arrow">→</span>
         </button>
         <div className="cta__meta">
-          <span>{t("cta.meta1")}</span>
-          <span className="cta__dot" />
           <span>{t("cta.meta2")}</span>
-          <span className="cta__dot" />
-          <span>{t("cta.meta3")}</span>
         </div>
       </div>
     </section>

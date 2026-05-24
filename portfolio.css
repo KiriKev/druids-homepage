@@ -890,13 +890,6 @@ html { scroll-behavior: smooth; }
   z-index: 3;
   border-top: 1px solid var(--rule);
 }
-.work__note {
-  max-width: 32ch;
-  font-size: 14px;
-  color: var(--cream-dim);
-  margin: 0;
-  line-height: 1.5;
-}
 .work__grid {
   margin-top: 56px;
   display: grid;
@@ -911,7 +904,7 @@ html { scroll-behavior: smooth; }
   position: relative;
   font-family: var(--ff-italic);
   font-style: italic;
-  font-size: clamp(15px, 1.15vw, 18px);
+  font-size: clamp(17px, 1.35vw, 20px);
   line-height: 1.55;
   color: var(--cream-dim);
   text-wrap: pretty;
@@ -1186,7 +1179,7 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 }
 .approach__num {
   font-family: var(--ff-mono);
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   color: var(--gold);
   margin-bottom: 18px;
@@ -1194,13 +1187,13 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 .approach__title {
   font-family: var(--ff-display);
   font-weight: 400;
-  font-size: clamp(22px, 1.7vw, 28px);
+  font-size: clamp(24px, 1.9vw, 32px);
   line-height: 1.15;
   margin: 0 0 14px;
   color: var(--cream);
 }
 .approach__body {
-  font-size: 14.5px;
+  font-size: 16.5px;
   line-height: 1.6;
   color: var(--cream-dim);
   margin: 0;
@@ -1356,14 +1349,13 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   color: var(--cream);
 }
 .service__lede {
-  font-size: 15.5px;
+  font-size: 19px;
   line-height: 1.5;
   color: var(--cream-dim);
   margin: 0 0 28px;
   max-width: 36ch;
   font-family: var(--ff-italic);
   font-style: italic;
-  font-size: 17px;
 }
 .service__list {
   list-style: none; padding: 0; margin: 0;
@@ -1372,7 +1364,7 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 .service__list li {
   padding: 16px 0 16px 28px;
   border-bottom: 1px solid var(--rule);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--cream);
   position: relative;
@@ -2070,6 +2062,62 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   text-transform: uppercase;
   color: var(--gold);
   opacity: 0.8;
+}
+
+/* Chain chips — Solana / Base / LUKSO row sitting under the Enki Art
+   screenshot to show where the marketplace will launch. */
+.builder__chains {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+.builder__chains-label {
+  font-family: var(--ff-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cream-dim);
+}
+.builder__chains-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(14px, 2.5vw, 28px);
+}
+.builder__chain {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--cream);
+  opacity: 0.85;
+  transition: opacity .2s;
+}
+.builder__chain:hover { opacity: 1; }
+.builder__chain-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 26px;
+}
+.builder__chain-mark--image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.builder__chain-name {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--cream);
 }
 
 /* Compact left-column table — sits under the copy, not as its own
