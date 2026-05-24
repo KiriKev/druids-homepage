@@ -1189,10 +1189,13 @@ function Builder() {
             <ul className="builder__chains-list">
               <li className="builder__chain" title="Solana">
                 <span className="builder__chain-mark" aria-hidden="true">
-                  <svg viewBox="0 0 64 50" width="34" height="26" fill="currentColor">
-                    <path d="M9.4 39.1 L52.4 39.1 L62.6 49.3 L19.6 49.3 Z"/>
-                    <path d="M9.4 0 L52.4 0 L62.6 10.2 L19.6 10.2 Z"/>
-                    <path d="M62.6 19.6 L19.6 19.6 L9.4 29.8 L52.4 29.8 Z"/>
+                  {/* Three forward-slash parallelograms — the bottom edge of
+                      each bar sits 8px to the LEFT of its top edge, matching
+                      the official Solana mark orientation. */}
+                  <svg viewBox="0 0 60 46" width="36" height="28" fill="currentColor">
+                    <path d="M8 0 L60 0 L52 10 L0 10 Z" />
+                    <path d="M8 18 L60 18 L52 28 L0 28 Z" />
+                    <path d="M8 36 L60 36 L52 46 L0 46 Z" />
                   </svg>
                 </span>
                 <span className="builder__chain-name">Solana</span>
@@ -1204,10 +1207,12 @@ function Builder() {
               </li>
               <li className="builder__chain" title="LUKSO">
                 <span className="builder__chain-mark" aria-hidden="true">
-                  <svg viewBox="0 0 64 64" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 22 Q22 12 32 22 T50 22"/>
-                    <path d="M14 32 Q22 22 32 32 T50 32"/>
-                    <path d="M14 42 Q22 32 32 42 T50 42"/>
+                  {/* Flat-top outer hexagon with a smaller hex cut out
+                      of the upper-left — matches the official LUKSO mark.
+                      Rendered as a single path with fill-rule:evenodd so
+                      the inner hex shows the background through it. */}
+                  <svg viewBox="0 0 64 64" width="30" height="30" fill="currentColor">
+                    <path fillRule="evenodd" d="M17 6 L47 6 L62 32 L47 58 L17 58 L2 32 Z M11 15 L19 15 L23 22 L19 29 L11 29 L7 22 Z" />
                   </svg>
                 </span>
                 <span className="builder__chain-name">LUKSO</span>
