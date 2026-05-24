@@ -56,6 +56,23 @@ export default async function handler(req, res) {
     telegram: "Telegram",
   }[contactMethod] || "Contact";
 
+  // Pull the visitor's IP + User-Agent out of the request so spammy /
+  // abusive submitters can be blocked at the Vercel firewall level
+  // later. Vercel sets `x-forwarded-for` (a comma-separated chain of
+  // proxies, leftmost = original client) and `x-real-ip`. We prefer
+  // the first hop of `x-forwarded-for` and fall back to `x-real-ip`.
+  const xff = String(req.headers["x-forwarded-for"] || "");
+  const clientIp =
+    xff.split(",")[0].trim() ||
+    String(req.headers["x-real-ip"] || "") ||
+    "unknown";
+  const userAgent = String(req.headers["user-agent"] || "unknown");
+  const country = String(
+    req.headers["x-vercel-ip-country"] ||
+    req.headers["x-vercel-ip-country-region"] ||
+    ""
+  );
+
   // Build a clean, scannable email body.
   const lines = [];
   if (body.service) lines.push(`Service: ${body.service}`);
@@ -70,6 +87,14 @@ export default async function handler(req, res) {
   lines.push("");
   lines.push("Description:");
   lines.push(description);
+  // Trace block at the bottom — kept separate from the brief content
+  // so it doesn't muddle the read, but visible enough to copy/paste
+  // an IP into Vercel's firewall when something feels off.
+  lines.push("");
+  lines.push("— trace —");
+  lines.push(`IP: ${clientIp}`);
+  if (country) lines.push(`Country: ${country}`);
+  lines.push(`User-Agent: ${userAgent}`);
 
   const text = lines.join("\n");
   const html = text

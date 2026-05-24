@@ -1202,7 +1202,7 @@ function Builder() {
               </li>
               <li className="builder__chain" title="LUKSO">
                 <span className="builder__chain-lockup builder__chain-lockup--image builder__chain-lockup--mono" aria-label="LUKSO">
-                  <img src="logos/lukso.webp" alt="" />
+                  <img src="logos/lukso.svg" alt="" />
                 </span>
               </li>
             </ul>

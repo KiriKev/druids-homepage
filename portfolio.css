@@ -1349,7 +1349,7 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   color: var(--cream);
 }
 .service__lede {
-  font-size: 19px;
+  font-size: 21px;
   line-height: 1.5;
   color: var(--cream-dim);
   margin: 0 0 28px;
