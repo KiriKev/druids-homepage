@@ -1189,13 +1189,13 @@ function Builder() {
             <ul className="builder__chains-list">
               <li className="builder__chain" title="Solana">
                 <span className="builder__chain-mark" aria-hidden="true">
-                  {/* Three forward-slash parallelograms — the bottom edge of
-                      each bar sits 8px to the LEFT of its top edge, matching
-                      the official Solana mark orientation. */}
-                  <svg viewBox="0 0 60 46" width="36" height="28" fill="currentColor">
-                    <path d="M8 0 L60 0 L52 10 L0 10 Z" />
-                    <path d="M8 18 L60 18 L52 28 L0 28 Z" />
-                    <path d="M8 36 L60 36 L52 46 L0 46 Z" />
+                  {/* Official Solana mark geometry (rounded-corner
+                      parallelograms with proper '/' slant). Filled with
+                      currentColor so it inherits the off-white treatment. */}
+                  <svg viewBox="0 0 397.7 311.7" fill="currentColor">
+                    <path d="M64.6,237.9c2.4-2.4,5.7-3.8,9.2-3.8h317.4c5.8,0,8.7,7,4.6,11.1l-62.7,62.7c-2.4,2.4-5.7,3.8-9.2,3.8H6.5c-5.8,0-8.7-7-4.6-11.1L64.6,237.9z" />
+                    <path d="M64.6,3.8C67.1,1.4,70.4,0,73.8,0h317.4c5.8,0,8.7,7,4.6,11.1l-62.7,62.7c-2.4,2.4-5.7,3.8-9.2,3.8H6.5c-5.8,0-8.7-7-4.6-11.1L64.6,3.8z" />
+                    <path d="M333.1,120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8,0-8.7,7-4.6,11.1l62.7,62.7c2.4,2.4,5.7,3.8,9.2,3.8h317.4c5.8,0,8.7-7,4.6-11.1L333.1,120.1z" />
                   </svg>
                 </span>
                 <span className="builder__chain-name">Solana</span>
@@ -1206,14 +1206,12 @@ function Builder() {
                 </span>
               </li>
               <li className="builder__chain" title="LUKSO">
-                <span className="builder__chain-mark" aria-hidden="true">
-                  {/* Flat-top outer hexagon with a smaller hex cut out
-                      of the upper-left — matches the official LUKSO mark.
-                      Rendered as a single path with fill-rule:evenodd so
-                      the inner hex shows the background through it. */}
-                  <svg viewBox="0 0 64 64" width="30" height="30" fill="currentColor">
-                    <path fillRule="evenodd" d="M17 6 L47 6 L62 32 L47 58 L17 58 L2 32 Z M11 15 L19 15 L23 22 L19 29 L11 29 L7 22 Z" />
-                  </svg>
+                <span className="builder__chain-mark builder__chain-mark--image builder__chain-mark--mono" aria-hidden="true">
+                  {/* Cropped from the official LUKSO lockup — just the
+                      hexagon-in-hexagon mark, no wordmark (we add LUKSO
+                      as a text label below). Mono filter flattens the
+                      brand pink to off-white. */}
+                  <img src="logos/lukso.webp" alt="" />
                 </span>
                 <span className="builder__chain-name">LUKSO</span>
               </li>

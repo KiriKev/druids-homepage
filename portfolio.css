@@ -2127,6 +2127,17 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   width: auto;
   object-fit: contain;
 }
+.builder__chain-mark--mono img {
+  /* Flatten brand colour to off-white so the LUKSO pink (and any
+     other colourful chain mark we add later) matches the worked-for
+     marquee aesthetic. */
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+.builder__chain-mark--mono {
+  width: 28px;
+  height: 28px;
+}
 .builder__chain-name {
   font-family: var(--ff-mono);
   font-size: 11px;
