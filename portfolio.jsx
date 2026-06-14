@@ -515,14 +515,32 @@ function Hero({ progress, onChat }) {
 // ─── Worked for ────────────────────────────────────────────────────
 function WorkedFor() {
   const t = useT();
+  const sectionRef = useRef(null);
+  // Hold the marquee at its start (Superteam first) until the section
+  // scrolls into view, then let it roll — once.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          el.classList.add("is-inview");
+          io.unobserve(el);
+        }
+      });
+    }, { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const logos = [
-    { name: "Accenture",        href: "https://www.accenture.com/",          src: "logos/accenture.webp",         h: 26 },
-    { name: "Siemens",          href: "https://www.siemens.com/",            src: "logos/siemens.webp",           h: 26 },
-    { name: "VW Kraftwerk",     href: "https://www.vw-kraftwerk.de/",        src: "logos/vw-kraftwerk.webp",      h: 28 },
-    { name: "ETAS",             href: "https://www.etas.com/",               src: "logos/etas.webp",              h: 30 },
-    { name: "BWS Consulting",   href: "https://bws-group.de/",               src: "logos/bws.webp",               h: 38 },
-    { name: "Koramis · telent", href: "https://www.telent.de/de/",           src: "logos/koramis.webp",           h: 28 },
-    { name: "Tokiphy",          href: "https://www.tokiphy.com/",            src: "logos/tokiphy.webp",           h: 26 },
+    { name: "Superteam Germany", href: "https://x.com/SuperteamDE/status/2065521385057767707", src: "logos/superteam.webp", h: 34 },
+    { name: "Accenture",        href: "https://www.accenture.com/",          src: "logos/accenture.webp",         h: 30 },
+    { name: "Siemens",          href: "https://www.siemens.com/",            src: "logos/siemens.webp",           h: 27 },
+    { name: "VW Kraftwerk",     href: "https://www.vw-kraftwerk.de/",        src: "logos/vw-kraftwerk.webp",      h: 32 },
+    { name: "ETAS",             href: "https://www.etas.com/",               src: "logos/etas.webp",              h: 24 },
+    { name: "BWS Consulting",   href: "https://bws-group.de/",               src: "logos/bws.webp",               h: 34 },
+    { name: "Koramis · telent", href: "https://www.telent.de/de/",           src: "logos/koramis.webp",           h: 27 },
+    { name: "Tokiphy",          href: "https://www.tokiphy.com/",            src: "logos/tokiphy.webp",           h: 30 },
     { name: "Responsive Fashion Institute", href: "https://www.responsivefashion.institute/", src: "logos/responsive-fashion.webp", h: 28 },
   ];
   const renderRow = (prefix) => logos.map((l) => (
@@ -533,7 +551,7 @@ function WorkedFor() {
     </li>
   ));
   return (
-    <section className="worked" aria-label={t("worked.label")}>
+    <section className="worked" ref={sectionRef} aria-label={t("worked.label")}>
       <div className="worked__head">
         <h2 className="worked__title">{t("worked.label")}</h2>
         <div className="worked__rule" />

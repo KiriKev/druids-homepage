@@ -832,19 +832,26 @@ html { scroll-behavior: smooth; }
   gap: 0;
   overflow: hidden;
   /* Fade the edges into the bg so logos slide in/out smoothly */
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
-          mask-image: linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 32px, #000 92%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 32px, #000 92%, transparent 100%);
 }
 .worked__track {
   list-style: none; padding: 0; margin: 0;
   display: flex; align-items: center;
   gap: clamp(48px, 5.5vw, 88px);
-  padding-right: clamp(48px, 5.5vw, 88px);
+  /* Leading space so the first logo (Superteam) sits clear of the left
+     fade at rest; mirrors the old padding-right so the loop stays seamless. */
+  padding-left: clamp(48px, 5.5vw, 88px);
   flex-shrink: 0;
   animation: marquee 38s linear infinite;
+  /* Held at the start (Superteam first) until the section scrolls into view */
+  animation-play-state: paused;
   will-change: transform;
 }
-.worked__marquee:hover .worked__track {
+.worked.is-inview .worked__track {
+  animation-play-state: running;
+}
+.worked.is-inview .worked__marquee:hover .worked__track {
   animation-play-state: paused;
 }
 @keyframes marquee {
@@ -878,7 +885,7 @@ html { scroll-behavior: smooth; }
 @media (max-width: 800px) {
   .worked__head { gap: 16px; }
   .worked__rule { max-width: 100px; }
-  .worked__track { gap: 36px; padding-right: 36px; animation-duration: 30s; }
+  .worked__track { gap: 36px; padding-left: 36px; padding-right: 0; animation-duration: 30s; }
 }
 
 /* ─── Work grid ──────────────────────────────────────────────── */
