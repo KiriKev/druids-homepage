@@ -79,6 +79,12 @@ function Lightbox({ items, startIndex, onClose }) {
           />
         )}
       </div>
+      {cur.caption && (
+        <div className="lb__caption" onClick={(e) => e.stopPropagation()}>
+          {cur.tag && <span className="lb__caption-tag">{cur.tag}</span>}
+          <span className="lb__caption-title">{cur.caption}</span>
+        </div>
+      )}
       {total > 1 && (
         <div className="lb__counter">
           {String(idx + 1).padStart(2, "0")} <span>/</span> {String(total).padStart(2, "0")}
@@ -287,7 +293,7 @@ function SectionDropdown() {
   // "horizon" of 35% from the top of the viewport: whichever section
   // crosses that horizon most recently is treated as current.
   useEffect(() => {
-    const sections = ["services", "work", "approach", "testimonials"];
+    const sections = ["services", "work", "latest", "approach", "testimonials"];
     const els = sections.map((id) => document.getElementById(id)).filter(Boolean);
     if (!els.length) return;
     const compute = () => {
@@ -326,6 +332,7 @@ function SectionDropdown() {
   const sectionItems = [
     { id: "services", label: t("nav.services") },
     { id: "work", label: t("nav.work") },
+    { id: "latest", label: t("latest.eyebrow") },
     { id: "approach", label: t("nav.approach") },
     { id: "testimonials", label: t("nav.voices") },
   ];
@@ -885,6 +892,258 @@ function Work() {
   );
 }
 
+// ─── Latest (data-driven feed) ────────────────────────────────────
+// #work above is the curated reel — four hand-picked pieces with
+// editorial copy in three languages. This section is the running log:
+// every new animation lands in latest.json (one line each, no i18n)
+// and shows up here newest-first. Clips that share a `series` key
+// (retainer / brand content) collapse into ONE tile with a clip count,
+// so ongoing brand work never floods the rail; opening it plays the
+// whole series in the lightbox, oldest → newest.
+//
+// Item shape (latest.json):
+//   { id, date: "YYYY-MM-DD", kind: "brand"|"short", title, src,
+//     aspect: "16/9", client?, poster?, series?, seriesTitle?, ongoing? }
+// `src` can be a relative path or a full URL (host videos off-repo).
+const LATEST_MANIFEST = "latest.json";
+const LATEST_RAIL_MAX = 10;
+const LATEST_KINDS = ["all", "brand", "short"];
+
+// Cross-component filter: the Services cards deep-link into the rail
+// pre-filtered ("For Brands" → brand). Tiny module store, no context
+// needed since only one Latest instance mounts per page.
+const latestFilter = {
+  value: "all",
+  listeners: new Set(),
+  set(v) {
+    if (!LATEST_KINDS.includes(v) || v === this.value) return;
+    this.value = v;
+    this.listeners.forEach((l) => l(v));
+  },
+};
+
+function useLatestFilter() {
+  const [f, setF] = useState(latestFilter.value);
+  useEffect(() => {
+    latestFilter.listeners.add(setF);
+    return () => latestFilter.listeners.delete(setF);
+  }, []);
+  return [f, (v) => latestFilter.set(v)];
+}
+
+// Fetch + group + sort. Returns null while loading, [] on error/empty.
+function useLatestEntries() {
+  const [entries, setEntries] = useState(null);
+  useEffect(() => {
+    let dead = false;
+    fetch(`${LATEST_MANIFEST}?v=1`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((items) => {
+        if (dead) return;
+        const groups = new Map();
+        for (const it of Array.isArray(items) ? items : []) {
+          if (!it || !it.src || !it.date) continue;
+          const key = it.series || it.id || it.src;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(it);
+        }
+        const out = [];
+        for (const [key, clips] of groups) {
+          clips.sort((a, b) => a.date.localeCompare(b.date));
+          const last = clips[clips.length - 1];
+          const isSeries = clips.length > 1 || !!last.series;
+          out.push({
+            key,
+            clips,
+            date: last.date,
+            kind: last.kind === "brand" ? "brand" : "short",
+            client: last.client || null,
+            aspect: last.aspect || "16/9",
+            poster: last.poster || null,
+            src: last.src,
+            title: isSeries ? (clips.find((c) => c.seriesTitle) || {}).seriesTitle || last.client || last.title : last.title,
+            series: isSeries,
+            ongoing: clips.some((c) => c.ongoing),
+          });
+        }
+        out.sort((a, b) => b.date.localeCompare(a.date));
+        setEntries(out);
+      })
+      .catch(() => { if (!dead) setEntries([]); });
+    return () => { dead = true; };
+  }, []);
+  return entries;
+}
+
+function fmtMonth(date, lang) {
+  const d = new Date(`${date}T00:00:00`);
+  if (isNaN(d)) return date;
+  try { return d.toLocaleDateString(lang, { month: "short", year: "numeric" }); }
+  catch (_) { return date; }
+}
+
+// One tile. Hover (desktop) plays a muted preview in place; click opens
+// the lightbox. `armed` gates mounting the <video> until the section is
+// near the viewport so ten manifests' worth of metadata doesn't load on
+// first paint.
+function LatestTile({ e, armed, onOpen, t, lang }) {
+  const vRef = useRef(null);
+  const play = () => { const v = vRef.current; if (v) v.play().catch(() => {}); };
+  const stop = () => { const v = vRef.current; if (v) { v.pause(); try { v.currentTime = 0; } catch (_) {} } };
+  const kind = t(`latest.kind.${e.kind}`);
+  const meta = [kind, e.client && !e.series ? e.client : null, fmtMonth(e.date, lang)].filter(Boolean).join(" · ");
+  return (
+    <button
+      type="button"
+      className={`ltile ${e.series ? "ltile--series" : ""}`}
+      style={{ "--ar": e.aspect }}
+      onClick={onOpen}
+      onMouseEnter={play}
+      onMouseLeave={stop}
+      onFocus={play}
+      onBlur={stop}
+      aria-label={`${e.title} — ${meta}`}
+    >
+      <span className="ltile__media" style={{ aspectRatio: e.aspect }}>
+        {armed ? (
+          <video
+            ref={vRef}
+            className="ltile__video"
+            src={e.src}
+            poster={e.poster || undefined}
+            preload={e.poster ? "none" : "metadata"}
+            muted
+            loop
+            playsInline
+            tabIndex={-1}
+          />
+        ) : e.poster ? (
+          <img className="ltile__video" src={e.poster} alt="" loading="lazy" />
+        ) : null}
+        {e.series && (
+          <span className="ltile__stack">
+            <span className="ltile__stack-n">{e.clips.length}</span> {t("latest.clips")}
+            {e.ongoing && <> · {t("latest.ongoing")}</>}
+          </span>
+        )}
+        <span className="ltile__play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5 L19 12 L8 19 Z" /></svg>
+        </span>
+      </span>
+      <span className="ltile__cap">
+        <span className="ltile__tag">{meta}</span>
+        <span className="ltile__title">{e.title}</span>
+      </span>
+    </button>
+  );
+}
+
+// Shared body: filter chips + tiles. mode="rail" (home) is a horizontal
+// filmstrip capped at LATEST_RAIL_MAX with an archive tile at the end;
+// mode="grid" (work.html) is a justified, wrapping gallery of everything.
+function LatestBody({ mode }) {
+  const t = useT();
+  const [lang] = useLang();
+  const openLightbox = React.useContext(LightboxContext);
+  const entries = useLatestEntries();
+  const [filter, setFilter] = useLatestFilter();
+  const railRef = useRef(null);
+  const [armed, setArmed] = useState(false);
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((es) => {
+      if (es.some((x) => x.isIntersecting)) { setArmed(true); io.disconnect(); }
+    }, { rootMargin: "400px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [entries]);
+
+  const shown = (entries || []).filter((e) => filter === "all" || e.kind === filter);
+  const visible = mode === "rail" ? shown.slice(0, LATEST_RAIL_MAX) : shown;
+
+  const open = (e) => {
+    const items = e.clips.map((c) => ({
+      type: "video",
+      src: c.src,
+      caption: c.title,
+      tag: [t(`latest.kind.${e.kind}`), c.client || e.client, fmtMonth(c.date, lang)].filter(Boolean).join(" · "),
+    }));
+    // Series → start at the newest clip; single → the only one.
+    openLightbox(items, items.length - 1);
+  };
+
+  const scrollBy = (dir) => {
+    const el = railRef.current;
+    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
+  };
+
+  return (
+    <>
+      <div className="latest__bar" data-reveal>
+        <div className="latest__filters" role="radiogroup" aria-label="Filter">
+          {LATEST_KINDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              role="radio"
+              aria-checked={filter === k}
+              className={`latest__chip ${filter === k ? "is-active" : ""}`}
+              onClick={() => setFilter(k)}
+            >
+              {t(`latest.filter.${k}`)}
+            </button>
+          ))}
+        </div>
+        {mode === "rail" && (
+          <div className="latest__arrows">
+            <button type="button" className="latest__arrow" onClick={() => scrollBy(-1)} aria-label={t("latest.prev")}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5 L8 12 L15 19" /></svg>
+            </button>
+            <button type="button" className="latest__arrow" onClick={() => scrollBy(1)} aria-label={t("latest.next")}>
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5 L16 12 L9 19" /></svg>
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div ref={railRef} className={`latest__${mode}`} data-reveal>
+        {visible.map((e) => (
+          <LatestTile key={e.key} e={e} armed={armed} onOpen={() => open(e)} t={t} lang={lang} />
+        ))}
+        {entries && !visible.length && <p className="latest__empty">{t("latest.empty")}</p>}
+        {mode === "rail" && !!shown.length && (
+          <a className="ltile ltile--more" href="work.html">
+            <span className="ltile__more-inner">
+              <span className="ltile__more-title">{t("latest.archive")}</span>
+              <span className="ltile__more-hint">{t("latest.archiveHint")}</span>
+              <span className="ltile__more-arrow" aria-hidden="true">→</span>
+            </span>
+          </a>
+        )}
+        {mode === "grid" && <span className="ltile ltile--spacer" aria-hidden="true" />}
+      </div>
+    </>
+  );
+}
+
+function Latest() {
+  const t = useT();
+  return (
+    <section className="latest" id="latest" data-screen-label="02b Latest">
+      <div className="section-head section-head--row" data-reveal>
+        <div>
+          <span className="eyebrow"><span className="eyebrow__dot"/> {t("latest.eyebrow")}</span>
+          <h2 className="display">{t("latest.title")}</h2>
+          <p className="lede">{br(t("latest.lede"))}</p>
+        </div>
+      </div>
+      <LatestBody mode="rail" />
+    </section>
+  );
+}
+
 // ─── Approach ─────────────────────────────────────────────────────
 function Approach() {
   const t = useT();
@@ -912,6 +1171,10 @@ function Approach() {
 }
 
 // ─── Services ─────────────────────────────────────────────────────
+// Cards that map onto a Latest filter get a "See recent work" deep link
+// (card index → latest.json `kind`).
+const SERVICE_RECENT = { 2: "brand", 3: "short" };
+
 function Services() {
   const t = useT();
   const cards = [1, 2, 3, 4, 5].map((n) => ({
@@ -931,6 +1194,11 @@ function Services() {
       <ul className="service__list">
         {c.bullets.filter((b) => b && b.trim()).map((b, j) => <li key={j}>{b}</li>)}
       </ul>
+      {SERVICE_RECENT[c.n] && (
+        <a className="service__recent" href="#latest" onClick={() => latestFilter.set(SERVICE_RECENT[c.n])}>
+          {t("services.recent")} <span className="btn__arrow">→</span>
+        </a>
+      )}
     </article>
   );
   // The label sits as the first grid item, spanning cols 2-3 of row 1.
@@ -1836,6 +2104,7 @@ function Page() {
         <WorkedFor />
         <Services />
         <Work />
+        <Latest />
         <Approach />
         <Testimonials />
         <Tools />
@@ -1868,4 +2137,44 @@ function Page() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+// ─── Archive page (work.html) ─────────────────────────────────────
+// Same manifest, every entry, justified grid. Slim nav — the home nav's
+// section anchors don't exist here.
+function ArchivePage() {
+  const t = useT();
+  useReveal();
+  const [lb, setLb] = useState(null);
+  const openLightbox = useCallback((items, startIndex = 0) => setLb({ items, startIndex }), []);
+  const closeLightbox = useCallback(() => setLb(null), []);
+  return (
+    <LightboxContext.Provider value={openLightbox}>
+      <div className="grain" aria-hidden="true" />
+      <nav className="nav nav--scrolled">
+        <a href="index.html" className="nav__logo">
+          <span className="nav__logo-mark"><img src="logos/kev-mark.webp" alt="" /></span>
+          <span className="nav__logo-text">Kevin Germin</span>
+        </a>
+        <div className="nav__right">
+          <LanguagePicker />
+          <a className="btn btn--ghost" href="index.html#work">← {t("archive.back")}</a>
+        </div>
+      </nav>
+      <main>
+        <section className="latest latest--archive" id="latest">
+          <div className="section-head section-head--row" data-reveal>
+            <div>
+              <span className="eyebrow"><span className="eyebrow__dot"/> {t("archive.eyebrow")}</span>
+              <h2 className="display">{t("archive.title")}</h2>
+            </div>
+          </div>
+          <LatestBody mode="grid" />
+        </section>
+      </main>
+      <Footer />
+      {lb && <Lightbox items={lb.items} startIndex={lb.startIndex} onClose={closeLightbox} />}
+    </LightboxContext.Provider>
+  );
+}
+
+const IS_ARCHIVE = document.body.dataset.page === "archive";
+ReactDOM.createRoot(document.getElementById("root")).render(IS_ARCHIVE ? <ArchivePage /> : <Page />);
