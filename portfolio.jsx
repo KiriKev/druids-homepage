@@ -844,9 +844,10 @@ function VideoPlayer({ src, poster, t, preview = false, playLabelKey = "work.pla
 //
 // Entry shape (work.json):
 //   { id, date: "YYYY-MM-DD", kind: "brand"|"short", src, aspect: "16/9",
-//     title, client?, body?, poster?, series?, seriesTitle?, ongoing? }
-// title / client / body / seriesTitle accept a plain string or
-// { en, de, ru }. `src` may be a relative path or a full URL — host
+//     title, tag?, client?, body?, poster?, series?, seriesTitle?, ongoing? }
+// title / tag / client / body / seriesTitle accept a plain string or
+// { en, de, ru }. `tag` is the small line above the title; when absent
+// it is composed as "Kind · Client · Month". `src` may be a relative path or a full URL — host
 // videos off-repo. `poster` (WebP still) is what makes a tile paint
 // instantly; without one the browser has to fetch enough of the video
 // to decode a frame.
@@ -912,6 +913,7 @@ function useReelEntries() {
             date: last.date,
             kind: last.kind === "brand" ? "brand" : "short",
             client: last.client || null,
+            tag: (isSeries ? lead.tag : last.tag) || null,
             aspect: last.aspect || "16/9",
             poster: last.poster || null,
             src: last.src,
@@ -979,7 +981,9 @@ function ReelTile({ e, span, armed, onOpen, t, lang }) {
   const play = () => { const v = vRef.current; if (v) v.play().catch(() => {}); };
   const stop = () => { const v = vRef.current; if (v) { v.pause(); try { v.currentTime = 0; } catch (_) {} } };
   const kind = t(`reel.kind.${e.kind}`);
-  const meta = [kind, e.client && !e.series ? L(e.client, lang) : null, fmtMonth(e.date, lang)].filter(Boolean).join(" · ");
+  const meta = e.tag
+    ? L(e.tag, lang)
+    : [kind, e.client && !e.series ? L(e.client, lang) : null, fmtMonth(e.date, lang)].filter(Boolean).join(" · ");
   const title = L(e.title, lang);
   const body = L(e.body, lang);
   return (
@@ -1058,7 +1062,7 @@ function ReelBody({ limit }) {
       type: "video",
       src: c.src,
       caption: L(c.title, lang),
-      tag: [t(`reel.kind.${e.kind}`), L(c.client || e.client, lang), fmtMonth(c.date, lang)].filter(Boolean).join(" · "),
+      tag: c.tag ? L(c.tag, lang) : [t(`reel.kind.${e.kind}`), L(c.client || e.client, lang), fmtMonth(c.date, lang)].filter(Boolean).join(" · "),
     }));
     // Series → start at the newest clip; single → the only one.
     openLightbox(items, items.length - 1);

@@ -6,10 +6,10 @@
     "src": "videos/work-1.mp4",
     "poster": "posters/work-1.webp",
     "aspect": "1/1",
-    "client": {
-      "en": "Brand reel",
-      "de": "Markenfilm",
-      "ru": "Бренд-ролик"
+    "tag": {
+      "en": "Brand · Snippet",
+      "de": "Marke · Ausschnitt",
+      "ru": "Марка · Фрагмент"
     },
     "title": {
       "en": "A brand, told in motion.",
@@ -29,10 +29,10 @@
     "src": "videos/work-2.mp4",
     "poster": "posters/work-2.webp",
     "aspect": "16/9",
-    "client": {
-      "en": "Personal brand",
-      "de": "Personenmarke",
-      "ru": "Личный бренд"
+    "tag": {
+      "en": "Personal Brand · Video Portfolio",
+      "de": "Personenmarke · Videoportfolio",
+      "ru": "Личный бренд · Видеопортфолио"
     },
     "title": {
       "en": "A personal brand, told in dynamic frames.",
@@ -46,40 +46,14 @@
     }
   },
   {
-    "id": "2026-06-10-tool-study-kling",
-    "date": "2026-06-10",
-    "kind": "short",
-    "src": "videos/kling.mp4",
-    "poster": "posters/kling.webp",
-    "aspect": "16/9",
-    "series": "tool-studies",
-    "seriesTitle": {
-      "en": "Tool studies",
-      "de": "Werkzeugstudien",
-      "ru": "Этюды с инструментами"
-    },
-    "ongoing": true,
-    "title": "Kling study"
-  },
-  {
-    "id": "2026-06-08-tool-study-seedance",
-    "date": "2026-06-08",
-    "kind": "short",
-    "src": "videos/seedance.mp4",
-    "poster": "posters/seedance.webp",
-    "aspect": "16/9",
-    "series": "tool-studies",
-    "title": "Seedance study"
-  },
-  {
     "id": "2026-06-06-memory-film",
     "date": "2026-06-06",
     "kind": "short",
     "src": "videos/andrej_best_of.mp4",
     "poster": "posters/andrej_best_of.webp",
     "aspect": "16/9",
-    "client": {
-      "en": "Private · Memory film",
+    "tag": {
+      "en": "Private · Memory Film",
       "de": "Privat · Erinnerungsfilm",
       "ru": "Частное · Фильм-воспоминание"
     },
@@ -101,10 +75,10 @@
     "src": "videos/work-4.mp4",
     "poster": "posters/work-4.webp",
     "aspect": "16/9",
-    "client": {
-      "en": "Reactions",
-      "de": "Reaktionen",
-      "ru": "Реакции"
+    "tag": {
+      "en": "Reactions · Emotion",
+      "de": "Reaktionen · Emotion",
+      "ru": "Реакции · Эмоции"
     },
     "title": {
       "en": "Strangers, in tears.",

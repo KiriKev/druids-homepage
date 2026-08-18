@@ -57,7 +57,8 @@ ffmpeg -ss 1 -i videos/foo.mp4 -frames:v 1 -vf "scale='min(1280,iw)':-2" -c:v li
 | `series` | Clips sharing a key collapse into **one** tile with a clip count; opening it plays the whole series in the lightbox. Use for retainer / ongoing brand content. `seriesTitle` names the tile (falls back to `client`), `ongoing: true` adds the badge. |
 | `aspect` | Real ratio (`16/9`, `9/16`, `1/1`, `4/5`) — sets the tile's column span (landscape 6, square 4, portrait 3; rows always sum to 12) and the media box's proportion |
 | `poster` | WebP still — makes the tile paint instantly. Without one the browser must fetch enough of the video to decode a frame, which can look like a black tile on slow files. |
-| `title` · `client` · `body` · `seriesTitle` | Plain string, or `{ "en": …, "de": …, "ru": … }`. `body` is the editorial paragraph under the tile (one sentence per line). |
+| `tag` | Small line above the title (e.g. `Brand · Snippet`). Without it the line is composed as `Kind · Client · Month`. |
+| `title` · `tag` · `client` · `body` · `seriesTitle` | Plain string, or `{ "en": …, "de": …, "ru": … }`. `body` is the editorial paragraph under the tile (one sentence per line). |
 | `src` | Relative path or full URL. Host videos off-repo (Cloudflare R2 / Vercel Blob) — Git is not a CDN. |
 
 The home page shows the newest 6 entries (series count as one) and links to `work.html` when there are more.
