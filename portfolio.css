@@ -888,22 +888,8 @@ html { scroll-behavior: smooth; }
   .worked__track { gap: 36px; padding-left: 36px; padding-right: 0; animation-duration: 30s; }
 }
 
-/* ─── Work grid ──────────────────────────────────────────────── */
-.work {
-  padding: clamp(40px, 5vw, 70px) var(--gutter) clamp(40px, 5vw, 70px);
-  max-width: var(--maxw);
-  margin: 0 auto;
-  position: relative;
-  z-index: 3;
-  border-top: 1px solid var(--rule);
-}
-.work__grid {
-  margin-top: 56px;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: clamp(28px, 3vw, 56px) clamp(18px, 2vw, 32px);
-}
-
+/* ─── Work / reel intro ─────────────────────────────────────── */
+.work__intro { max-width: var(--maxw); margin: 0 auto; }
 .work__disclaimer {
   max-width: 80ch;
   margin: 28px var(--gutter) 0;
@@ -923,34 +909,9 @@ html { scroll-behavior: smooth; }
   background: var(--gold);
   opacity: 0.6;
 }
-.work__item {
-  margin: 0;
-  display: flex; flex-direction: column;
-  gap: 22px;
-}
-.work__item--1 { grid-column: span 7; }
-.work__item--2 { grid-column: span 5; }
-.work__item--3 { grid-column: span 5; }
-.work__item--4 { grid-column: span 7; }
-.work__media {
-  position: relative;
-  width: 100%;
-  border-radius: 4px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #0e1c1a, #0a1413);
-}
-.work__item--1 .work__media,
-.work__item--4 .work__media { aspect-ratio: 16/10; }
-.work__item--2 .work__media,
-.work__item--3 .work__media { aspect-ratio: 4/5; }
-.work__media image-slot {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  --is-placeholder-bg: linear-gradient(135deg, #0e1c1a, #0a1413);
-}
-/* Force every image-slot in this design to fully contain its image.
-   The shadow-DOM img is exposed via part="image"; !important beats the
-   inline styles _applyView would otherwise set in cover mode. */
+/* Every image-slot in this design fully contains its image. The shadow-DOM
+   img is exposed via part="image"; !important beats the inline styles
+   _applyView would otherwise set in cover mode. */
 image-slot::part(image) {
   position: absolute !important;
   inset: 0 !important;
@@ -974,30 +935,10 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   opacity: 0.78 !important;
 }
 
-/* Force the slot's internal img to fully fit, never crop. The shadow-DOM
-   img is exposed via part="image"; ::part with !important beats the
-   inline styles _applyView sets when fit=cover would otherwise apply. */
-.work__media image-slot::part(image) {
-  position: absolute !important;
-  inset: 0 !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: 100% !important;
-  height: 100% !important;
-  max-width: 100% !important;
-  max-height: 100% !important;
-  transform: none !important;
-  object-fit: contain !important;
-  object-position: center center !important;
-}
-
-/* (Legacy .work__video class removed — videos now render with the
-   shared .media__video class via the VideoPlayer component.) */
-
 /* Shared media-player styling: applied wherever the VideoPlayer
-   component renders — work tiles, the tools panel, the recognition
-   card. Play overlay shows until the user activates the clip; then
-   the controls bar takes over with play/pause + maximize only. */
+   component renders — the tools panel and the recognition card. Play
+   overlay shows until the user activates the clip; then the controls
+   bar takes over with play/pause + maximize only. */
 .media-wrap {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -1123,69 +1064,28 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   background: rgba(201, 163, 92, 0.12);
   transform: scale(1.05);
 }
-.work__cap {
-  display: flex; flex-direction: column;
-  max-width: 46ch;
-}
-.work__tag {
-  display: inline-block;
-  font-family: var(--ff-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 12px;
-}
-.work__title {
-  font-family: var(--ff-display);
-  font-weight: 400;
-  font-size: clamp(22px, 1.9vw, 30px);
-  line-height: 1.1;
-  letter-spacing: -0.005em;
-  margin: 0 0 12px;
-  color: var(--cream);
-  text-wrap: balance;
-}
-.work__body {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--cream-dim);
-}
 
-@media (max-width: 800px) {
-  .work__grid { grid-template-columns: 1fr; }
-  .work__item { grid-column: span 1 !important; }
-  .work__item--1 .work__media,
-  .work__item--4 .work__media { aspect-ratio: 16/10; }
-  .work__item--2 .work__media,
-  .work__item--3 .work__media { aspect-ratio: 4/5; }
-}
-
-/* ─── Latest (data-driven feed) ─────────────────────────────── */
-/* Two render modes share the tile: .latest__rail is the home filmstrip
+/* ─── Work / reel (data-driven) ─────────────────────────────── */
+/* Two render modes share the tile: .reel__rail is the home filmstrip
    (fixed media height, width follows each clip's aspect ratio, so 9:16
    brand content and 16:9 films sit side by side at true proportions);
-   .latest__grid is the archive's justified wrap (flex-grow ∝ aspect
+   .reel__grid is the archive's justified wrap (flex-grow ∝ aspect
    keeps every row's tiles the same height). --ar is set inline per tile
-   from latest.json's `aspect` and is used raw inside calc(). */
-.latest {
+   from work.json's `aspect` and is used raw inside calc(). */
+.reel {
   position: relative;
   z-index: 3;
   border-top: 1px solid var(--rule);
   padding-bottom: clamp(48px, 6vw, 90px);
-  --ltile-h: clamp(220px, 26vw, 340px);
+  --rtile-h: clamp(220px, 26vw, 340px);
 }
-.latest .section-head .lede { margin-top: 20px; }
-.latest__bar {
+.reel__bar {
   max-width: var(--maxw);
-  margin: 40px auto 0;
+  margin: 36px auto 0;
   padding: 0 var(--gutter);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 20px; flex-wrap: wrap;
 }
-.latest__filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.latest__chip {
+.reel__filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.reel__chip {
   appearance: none;
   background: transparent;
   border: 1px solid var(--rule);
@@ -1197,28 +1097,61 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   cursor: pointer;
   transition: color .25s, border-color .25s, background .25s;
 }
-.latest__chip:hover { color: var(--cream); border-color: rgba(201, 163, 92, 0.5); }
-.latest__chip.is-active { color: var(--ink); background: var(--gold); border-color: var(--gold); }
-.latest__arrows { display: flex; gap: 8px; }
-.latest__arrow {
+.reel__chip:hover { color: var(--cream); border-color: rgba(201, 163, 92, 0.5); }
+.reel__chip.is-active { color: var(--ink); background: var(--gold); border-color: var(--gold); }
+
+/* Wrap around the rail: hosts the overlay arrows and the edge fades.
+   .can-prev / .can-next are toggled from scroll position, so an arrow
+   and its fade only show while there is somewhere left to go. */
+.reel__wrap { position: relative; }
+.reel__wrap::before,
+.reel__wrap::after {
+  content: "";
+  position: absolute; top: 0; bottom: 0;
+  width: clamp(48px, 8vw, 140px);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+.reel__wrap::before { left: 0;  background: linear-gradient(90deg, var(--ink) 0%, transparent 100%); }
+.reel__wrap::after  { right: 0; background: linear-gradient(270deg, var(--ink) 0%, transparent 100%); }
+.reel__wrap.can-prev::before,
+.reel__wrap.can-next::after { opacity: 1; }
+.reel__arrow {
   appearance: none;
-  width: 38px; height: 38px; border-radius: 50%;
-  background: rgba(7, 13, 12, 0.65);
-  border: 1px solid rgba(243, 234, 216, 0.18);
-  color: var(--cream);
+  position: absolute;
+  top: calc(12px + var(--rtile-h) / 2);   /* centre of the media strip */
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(7, 13, 12, 0.72);
+  border: 1px solid var(--gold);
+  color: var(--gold);
   cursor: pointer;
   display: inline-flex; align-items: center; justify-content: center;
-  transition: color .2s, border-color .2s, background .2s, transform .2s cubic-bezier(.2,.7,.2,1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 28px -8px rgba(231, 200, 133, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease, background .3s, color .3s, transform .3s cubic-bezier(.2,.7,.2,1);
 }
-.latest__arrow:hover {
-  color: var(--gold); border-color: var(--gold);
-  background: rgba(201, 163, 92, 0.12);
-  transform: scale(1.05);
+.reel__arrow--prev { left: clamp(10px, 1.5vw, 24px); }
+.reel__arrow--next { right: clamp(10px, 1.5vw, 24px); }
+.reel__wrap.can-prev .reel__arrow--prev,
+.reel__wrap.can-next .reel__arrow--next { opacity: 1; pointer-events: auto; }
+.reel__arrow:hover {
+  background: rgba(201, 163, 92, 0.18);
+  color: var(--gold-glow);
+  transform: translateY(-50%) scale(1.06);
 }
+.reel__arrow--prev svg { margin-left: -2px; }
+.reel__arrow--next svg { margin-left: 2px; }
 
 /* Rail — full-bleed scroller whose first tile aligns with the page
    column (padding = whatever centres --maxw, never less than --gutter). */
-.latest__rail {
+.reel__rail {
   display: flex;
   gap: clamp(14px, 1.6vw, 24px);
   margin-top: 28px;
@@ -1229,30 +1162,30 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   scroll-padding-inline: max(var(--gutter), calc((100% - var(--maxw)) / 2 + var(--gutter)));
   scrollbar-width: none;
 }
-.latest__rail::-webkit-scrollbar { display: none; }
-.latest__rail .ltile { width: calc(var(--ltile-h) * (var(--ar))); }
-.latest__rail .ltile__media { height: var(--ltile-h); }
+.reel__rail::-webkit-scrollbar { display: none; }
+.reel__rail .rtile { width: calc(var(--rtile-h) * (var(--ar))); }
+.reel__rail .rtile__media { height: var(--rtile-h); }
 
 /* Grid — justified rows. */
-.latest__grid {
+.reel__grid {
   max-width: var(--maxw);
   margin: 28px auto 0;
   padding: 12px var(--gutter) 0;
   display: flex; flex-wrap: wrap;
   gap: clamp(18px, 2vw, 28px);
 }
-.latest__grid .ltile { flex: calc(var(--ar)) 1 calc(var(--ar) * 240px); }
-.latest__grid .ltile__media { width: 100%; }
-.latest__grid .ltile--spacer { flex: 10 1 0; height: 0; padding: 0; margin: 0; visibility: hidden; }
+.reel__grid .rtile { flex: calc(var(--ar)) 1 calc(var(--ar) * 240px); }
+.reel__grid .rtile__media { width: 100%; }
+.reel__grid .rtile--spacer { flex: 10 1 0; height: 0; padding: 0; margin: 0; visibility: hidden; }
 
-.latest__empty {
+.reel__empty {
   margin: 0; padding: 40px 0;
   font-family: var(--ff-italic); font-style: italic;
   font-size: 18px; color: var(--cream-dim);
 }
 
 /* Tile */
-.ltile {
+.rtile {
   appearance: none;
   background: none; border: 0; padding: 0; margin: 0;
   color: inherit; font: inherit; text-align: left; text-decoration: none;
@@ -1262,7 +1195,7 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   scroll-snap-align: start;
   min-width: 0;
 }
-.ltile__media {
+.rtile__media {
   position: relative;
   display: block;
   overflow: hidden;
@@ -1271,25 +1204,25 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   border: 1px solid var(--rule-soft);
   transition: transform .5s cubic-bezier(.2,.7,.2,1), border-color .3s, box-shadow .3s;
 }
-.ltile--series .ltile__media {
+.rtile--series .rtile__media {
   /* Stacked-cards hint: an offset outline peeking out top-right. */
   box-shadow: 6px -6px 0 -2px var(--ink), 6px -6px 0 -1px rgba(201, 163, 92, 0.35);
 }
-.ltile:hover .ltile__media,
-.ltile:focus-visible .ltile__media {
+.rtile:hover .rtile__media,
+.rtile:focus-visible .rtile__media {
   transform: translateY(-3px);
   border-color: rgba(201, 163, 92, 0.5);
 }
-.ltile:focus-visible { outline: none; }
-.ltile:focus-visible .ltile__media { outline: 1px solid var(--gold); outline-offset: 3px; }
-.ltile__video {
+.rtile:focus-visible { outline: none; }
+.rtile:focus-visible .rtile__media { outline: 1px solid var(--gold); outline-offset: 3px; }
+.rtile__video {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
   background: #000;
 }
-.ltile__play {
+.rtile__play {
   position: absolute; right: 12px; bottom: 12px;
   width: 36px; height: 36px; border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
@@ -1300,9 +1233,9 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   backdrop-filter: blur(6px);
   transition: background .3s, color .3s, transform .3s cubic-bezier(.2,.7,.2,1);
 }
-.ltile__play svg { margin-left: 2px; }
-.ltile:hover .ltile__play { background: rgba(201, 163, 92, 0.18); color: var(--gold-glow); transform: scale(1.06); }
-.ltile__stack {
+.rtile__play svg { margin-left: 2px; }
+.rtile:hover .rtile__play { background: rgba(201, 163, 92, 0.18); color: var(--gold-glow); transform: scale(1.06); }
+.rtile__stack {
   position: absolute; left: 12px; top: 12px;
   padding: 6px 10px; border-radius: 999px;
   background: rgba(7, 13, 12, 0.7);
@@ -1314,14 +1247,14 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   backdrop-filter: blur(6px);
   white-space: nowrap;
 }
-.ltile__stack-n { color: var(--gold); }
-.ltile__cap { display: flex; flex-direction: column; gap: 6px; }
-.ltile__tag {
+.rtile__stack-n { color: var(--gold); }
+.rtile__cap { display: flex; flex-direction: column; gap: 6px; }
+.rtile__tag {
   font-family: var(--ff-mono);
   font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--gold);
 }
-.ltile__title {
+.rtile__title {
   font-family: var(--ff-display);
   font-size: clamp(18px, 1.5vw, 24px);
   line-height: 1.15;
@@ -1330,33 +1263,33 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 }
 
 /* Archive tile at the end of the rail. */
-.ltile--more { width: calc(var(--ltile-h) * 0.72); }
-.ltile__more-inner {
-  height: var(--ltile-h);
+.rtile--more { width: calc(var(--rtile-h) * 0.72); }
+.rtile__more-inner {
+  height: var(--rtile-h);
   border: 1px dashed rgba(201, 163, 92, 0.4);
   border-radius: 4px;
   display: flex; flex-direction: column; justify-content: flex-end;
   padding: 22px; gap: 8px;
   transition: border-color .3s, background .3s;
 }
-.ltile__more-title {
+.rtile__more-title {
   font-family: var(--ff-display);
   font-size: clamp(22px, 2vw, 30px);
   line-height: 1.05;
   color: var(--cream);
 }
-.ltile__more-hint { font-size: 13.5px; color: var(--cream-dim); }
-.ltile__more-arrow {
+.rtile__more-hint { font-size: 13.5px; color: var(--cream-dim); }
+.rtile__more-arrow {
   font-family: var(--ff-display);
   font-size: 28px; line-height: 1;
   color: var(--gold);
   margin-top: 6px;
   transition: transform .3s cubic-bezier(.2,.7,.2,1);
 }
-.ltile--more:hover .ltile__more-inner { border-color: var(--gold); background: rgba(201, 163, 92, 0.06); }
-.ltile--more:hover .ltile__more-arrow { transform: translateX(6px); }
+.rtile--more:hover .rtile__more-inner { border-color: var(--gold); background: rgba(201, 163, 92, 0.06); }
+.rtile--more:hover .rtile__more-arrow { transform: translateX(6px); }
 
-/* Services → Latest deep link. */
+/* Services → reel deep link. */
 .service__recent {
   display: inline-flex; align-items: center; gap: 10px;
   margin-top: 22px;
@@ -1370,12 +1303,12 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 .service__recent:hover .btn__arrow { transform: translateX(4px); }
 
 /* Archive page (work.html) */
-.latest--archive { border-top: 0; padding-top: 72px; min-height: 100vh; }
+.reel--archive { border-top: 0; padding-top: 72px; min-height: 100vh; }
 
 @media (max-width: 800px) {
-  .latest { --ltile-h: clamp(170px, 50vw, 300px); }
-  .latest__arrows { display: none; }
-  .latest__grid .ltile { flex-basis: calc(var(--ar) * 160px); }
+  .reel { --rtile-h: clamp(170px, 50vw, 300px); }
+  .reel__arrow { display: none; }
+  .reel__grid .rtile { flex-basis: calc(var(--ar) * 160px); }
 }
 
 /* ─── Approach ───────────────────────────────────────────────── */
@@ -2020,9 +1953,14 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
 .lb__caption {
   position: absolute;
   left: 28px; bottom: 20px;
-  display: flex; flex-direction: column; gap: 4px;
-  max-width: 40ch;
-  pointer-events: none;
+  display: flex; flex-direction: column; gap: 6px;
+  max-width: min(52ch, 60vw);
+  padding: 14px 18px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(7, 13, 12, 0.55), rgba(7, 13, 12, 0.85));
+  border: 1px solid var(--rule);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 .lb__caption-tag {
   font-family: var(--ff-mono);
@@ -2035,9 +1973,22 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   line-height: 1.15;
   color: var(--cream);
 }
+/* Editorial paragraph — clamped so it never swallows the frame; hover
+   (or focus-within) unfolds it. */
+.lb__caption-body {
+  margin: 4px 0 0;
+  font-size: 13.5px; line-height: 1.55;
+  color: var(--cream-dim);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  transition: color .3s;
+}
+.lb__caption:hover .lb__caption-body { -webkit-line-clamp: unset; color: var(--cream); }
 
 @media (max-width: 720px) {
-  .lb__caption { left: 14px; bottom: 14px; max-width: 60vw; }
+  .lb__caption { left: 14px; bottom: 14px; max-width: 80vw; padding: 10px 12px; }
   .lb__close { top: 14px; right: 14px; width: 36px; height: 36px; }
   .lb__nav { width: 40px; height: 40px; }
   .lb__nav--prev { left: 8px; }

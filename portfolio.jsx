@@ -83,6 +83,7 @@ function Lightbox({ items, startIndex, onClose }) {
         <div className="lb__caption" onClick={(e) => e.stopPropagation()}>
           {cur.tag && <span className="lb__caption-tag">{cur.tag}</span>}
           <span className="lb__caption-title">{cur.caption}</span>
+          {cur.body && <p className="lb__caption-body">{cur.body}</p>}
         </div>
       )}
       {total > 1 && (
@@ -293,7 +294,7 @@ function SectionDropdown() {
   // "horizon" of 35% from the top of the viewport: whichever section
   // crosses that horizon most recently is treated as current.
   useEffect(() => {
-    const sections = ["services", "work", "latest", "approach", "testimonials"];
+    const sections = ["services", "work", "approach", "testimonials"];
     const els = sections.map((id) => document.getElementById(id)).filter(Boolean);
     if (!els.length) return;
     const compute = () => {
@@ -332,7 +333,6 @@ function SectionDropdown() {
   const sectionItems = [
     { id: "services", label: t("nav.services") },
     { id: "work", label: t("nav.work") },
-    { id: "latest", label: t("latest.eyebrow") },
     { id: "approach", label: t("nav.approach") },
     { id: "testimonials", label: t("nav.voices") },
   ];
@@ -570,20 +570,6 @@ function WorkedFor() {
     </section>
   );
 }
-
-// ─── Selected work ────────────────────────────────────────────────
-// Each piece can be either:
-//   videoSrc: "videos/foo.mp4" — autoplays muted in loop
-//   poster:   "videos/foo-poster.jpg" — optional first-frame still
-// or it falls back to the drop slot.
-const WORK_MEDIA = [
-  // aspect set per file's real dimensions so the tile sizes correctly
-  // without having to load the video first (lazy-load below).
-  { id: "work-1", videoSrc: "videos/work-1.mp4", poster: null, aspect: "1 / 1"  }, // Brand · 1440×1440
-  { id: "work-2", videoSrc: "videos/work-2.mp4", poster: null, aspect: "16 / 9" }, // Personal brand · 1280×720
-  { id: "work-3", videoSrc: "videos/andrej_best_of.mp4", poster: null, aspect: "16 / 9" }, // Private memory · 1920×1080
-  { id: "work-4", videoSrc: "videos/work-4.mp4", poster: null, aspect: "16 / 9" }, // Reactions · 1920×1080
-];
 
 // VideoPlayer — lazy-load video with a play overlay and custom controls.
 // By default the <video> element is NOT mounted until the user clicks
@@ -845,98 +831,63 @@ function VideoPlayer({ src, poster, t, preview = false, playLabelKey = "work.pla
   );
 }
 
-function WorkMedia({ id, videoSrc, poster, n, t }) {
-  if (!videoSrc) {
-    return <image-slot id={id} shape="rounded" radius="4" fit="contain" placeholder={`Film 0${n}`}></image-slot>;
-  }
-  // preview enables the silent 10-second loop behind the play button.
-  return <VideoPlayer src={videoSrc} poster={poster} t={t} preview />;
-}
-
-function Work() {
-  const t = useT();
-  // 1..6 — render all configured tiles, not just hard-coded count
-  return (
-    <section className="work" id="work" data-screen-label="02 Work">
-      <div className="section-head section-head--row" data-reveal>
-        <div>
-          <span className="eyebrow"><span className="eyebrow__dot"/> {t("work.eyebrow")}</span>
-          <h2 className="display">{t("work.title")}</h2>
-        </div>
-      </div>
-      <p className="work__disclaimer" data-reveal>
-        <span className="work__disclaimer-mark" aria-hidden="true" />
-        <span>{br(t("work.disclaimer"))}</span>
-      </p>
-      <div className="work__grid" data-reveal>
-        {WORK_MEDIA.map((m, i) => {
-          const n = i + 1;
-          return (
-            <figure key={m.id} className={`work__item work__item--${n}`}>
-              <div
-                className="work__media"
-                style={m.aspect ? { aspectRatio: m.aspect } : undefined}
-              >
-                <WorkMedia id={m.id} videoSrc={m.videoSrc} poster={m.poster} n={n} t={t} />
-              </div>
-              <figcaption className="work__cap">
-                <span className="work__tag">{t(`work.${n}.tag`)}</span>
-                <h3 className="work__title">{t(`work.${n}.title`)}</h3>
-                <p className="work__body">{br(t(`work.${n}.body`))}</p>
-              </figcaption>
-            </figure>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-// ─── Latest (data-driven feed) ────────────────────────────────────
-// #work above is the curated reel — four hand-picked pieces with
-// editorial copy in three languages. This section is the running log:
-// every new animation lands in latest.json (one line each, no i18n)
-// and shows up here newest-first. Clips that share a `series` key
-// (retainer / brand content) collapse into ONE tile with a clip count,
-// so ongoing brand work never floods the rail; opening it plays the
-// whole series in the lightbox, oldest → newest.
+// ─── Work — the reel (data-driven) ────────────────────────────────
+// One portfolio section, one data source. Every piece lives in
+// work.json (one entry per clip) and shows up newest-first: a
+// horizontal filmstrip on the home page (capped at REEL_RAIL_MAX, with
+// an archive tile at the end) and a justified grid on work.html.
+// Two categories — brand / short — drive the filter chips and the
+// Services deep links. Clips that share a `series` key (retainer /
+// running brand content) collapse into ONE tile with a clip count, so
+// ongoing work never floods the rail; opening it plays the whole series
+// in the lightbox, oldest → newest.
 //
-// Item shape (latest.json):
-//   { id, date: "YYYY-MM-DD", kind: "brand"|"short", title, src,
-//     aspect: "16/9", client?, poster?, series?, seriesTitle?, ongoing? }
-// `src` can be a relative path or a full URL (host videos off-repo).
-const LATEST_MANIFEST = "latest.json";
-const LATEST_RAIL_MAX = 10;
-const LATEST_KINDS = ["all", "brand", "short"];
+// Entry shape (work.json):
+//   { id, date: "YYYY-MM-DD", kind: "brand"|"short", src, aspect: "16/9",
+//     title, client?, body?, poster?, series?, seriesTitle?, ongoing? }
+// title / client / body / seriesTitle accept a plain string or
+// { en, de, ru }. `src` may be a relative path or a full URL — host
+// videos off-repo. `body` is the editorial paragraph shown in the
+// lightbox caption.
+const REEL_MANIFEST = "work.json";
+const REEL_RAIL_MAX = 10;
+const REEL_KINDS = ["all", "brand", "short"];
 
-// Cross-component filter: the Services cards deep-link into the rail
-// pre-filtered ("For Brands" → brand). Tiny module store, no context
-// needed since only one Latest instance mounts per page.
-const latestFilter = {
+// Localised field: string, or { en, de, ru } → current language, EN fallback.
+function L(v, lang) {
+  if (v == null) return "";
+  if (typeof v !== "object") return String(v);
+  return v[lang] || v.en || Object.values(v)[0] || "";
+}
+
+// Cross-component filter: the Services cards deep-link into the reel
+// pre-filtered ("For Brands" → brand). Tiny module store — only one
+// reel mounts per page, so no context needed.
+const reelFilter = {
   value: "all",
   listeners: new Set(),
   set(v) {
-    if (!LATEST_KINDS.includes(v) || v === this.value) return;
+    if (!REEL_KINDS.includes(v) || v === this.value) return;
     this.value = v;
     this.listeners.forEach((l) => l(v));
   },
 };
 
-function useLatestFilter() {
-  const [f, setF] = useState(latestFilter.value);
+function useReelFilter() {
+  const [f, setF] = useState(reelFilter.value);
   useEffect(() => {
-    latestFilter.listeners.add(setF);
-    return () => latestFilter.listeners.delete(setF);
+    reelFilter.listeners.add(setF);
+    return () => reelFilter.listeners.delete(setF);
   }, []);
-  return [f, (v) => latestFilter.set(v)];
+  return [f, (v) => reelFilter.set(v)];
 }
 
 // Fetch + group + sort. Returns null while loading, [] on error/empty.
-function useLatestEntries() {
+function useReelEntries() {
   const [entries, setEntries] = useState(null);
   useEffect(() => {
     let dead = false;
-    fetch(`${LATEST_MANIFEST}?v=1`)
+    fetch(`${REEL_MANIFEST}?v=1`)
       .then((r) => (r.ok ? r.json() : []))
       .then((items) => {
         if (dead) return;
@@ -952,6 +903,7 @@ function useLatestEntries() {
           clips.sort((a, b) => a.date.localeCompare(b.date));
           const last = clips[clips.length - 1];
           const isSeries = clips.length > 1 || !!last.series;
+          const seriesTitle = (clips.find((c) => c.seriesTitle) || {}).seriesTitle;
           out.push({
             key,
             clips,
@@ -961,7 +913,7 @@ function useLatestEntries() {
             aspect: last.aspect || "16/9",
             poster: last.poster || null,
             src: last.src,
-            title: isSeries ? (clips.find((c) => c.seriesTitle) || {}).seriesTitle || last.client || last.title : last.title,
+            title: isSeries ? seriesTitle || last.client || last.title : last.title,
             series: isSeries,
             ongoing: clips.some((c) => c.ongoing),
           });
@@ -983,32 +935,33 @@ function fmtMonth(date, lang) {
 }
 
 // One tile. Hover (desktop) plays a muted preview in place; click opens
-// the lightbox. `armed` gates mounting the <video> until the section is
-// near the viewport so ten manifests' worth of metadata doesn't load on
+// the lightbox. `armed` gates mounting the <video> until the reel is
+// near the viewport so ten clips' worth of metadata doesn't load on
 // first paint.
-function LatestTile({ e, armed, onOpen, t, lang }) {
+function ReelTile({ e, armed, onOpen, t, lang }) {
   const vRef = useRef(null);
   const play = () => { const v = vRef.current; if (v) v.play().catch(() => {}); };
   const stop = () => { const v = vRef.current; if (v) { v.pause(); try { v.currentTime = 0; } catch (_) {} } };
-  const kind = t(`latest.kind.${e.kind}`);
-  const meta = [kind, e.client && !e.series ? e.client : null, fmtMonth(e.date, lang)].filter(Boolean).join(" · ");
+  const kind = t(`reel.kind.${e.kind}`);
+  const meta = [kind, e.client && !e.series ? L(e.client, lang) : null, fmtMonth(e.date, lang)].filter(Boolean).join(" · ");
+  const title = L(e.title, lang);
   return (
     <button
       type="button"
-      className={`ltile ${e.series ? "ltile--series" : ""}`}
+      className={`rtile ${e.series ? "rtile--series" : ""}`}
       style={{ "--ar": e.aspect }}
       onClick={onOpen}
       onMouseEnter={play}
       onMouseLeave={stop}
       onFocus={play}
       onBlur={stop}
-      aria-label={`${e.title} — ${meta}`}
+      aria-label={`${title} — ${meta}`}
     >
-      <span className="ltile__media" style={{ aspectRatio: e.aspect }}>
+      <span className="rtile__media" style={{ aspectRatio: e.aspect }}>
         {armed ? (
           <video
             ref={vRef}
-            className="ltile__video"
+            className="rtile__video"
             src={e.src}
             poster={e.poster || undefined}
             preload={e.poster ? "none" : "metadata"}
@@ -1018,37 +971,39 @@ function LatestTile({ e, armed, onOpen, t, lang }) {
             tabIndex={-1}
           />
         ) : e.poster ? (
-          <img className="ltile__video" src={e.poster} alt="" loading="lazy" />
+          <img className="rtile__video" src={e.poster} alt="" loading="lazy" />
         ) : null}
         {e.series && (
-          <span className="ltile__stack">
-            <span className="ltile__stack-n">{e.clips.length}</span> {t("latest.clips")}
-            {e.ongoing && <> · {t("latest.ongoing")}</>}
+          <span className="rtile__stack">
+            <span className="rtile__stack-n">{e.clips.length}</span> {t("reel.clips")}
+            {e.ongoing && <> · {t("reel.ongoing")}</>}
           </span>
         )}
-        <span className="ltile__play" aria-hidden="true">
+        <span className="rtile__play" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5 L19 12 L8 19 Z" /></svg>
         </span>
       </span>
-      <span className="ltile__cap">
-        <span className="ltile__tag">{meta}</span>
-        <span className="ltile__title">{e.title}</span>
+      <span className="rtile__cap">
+        <span className="rtile__tag">{meta}</span>
+        <span className="rtile__title">{title}</span>
       </span>
     </button>
   );
 }
 
 // Shared body: filter chips + tiles. mode="rail" (home) is a horizontal
-// filmstrip capped at LATEST_RAIL_MAX with an archive tile at the end;
+// filmstrip with edge fades and overlay arrows that hide at either end;
 // mode="grid" (work.html) is a justified, wrapping gallery of everything.
-function LatestBody({ mode }) {
+function ReelBody({ mode }) {
   const t = useT();
   const [lang] = useLang();
   const openLightbox = React.useContext(LightboxContext);
-  const entries = useLatestEntries();
-  const [filter, setFilter] = useLatestFilter();
+  const entries = useReelEntries();
+  const [filter, setFilter] = useReelFilter();
   const railRef = useRef(null);
   const [armed, setArmed] = useState(false);
+  // Which way the rail can still scroll — drives arrow + fade visibility.
+  const [edge, setEdge] = useState({ prev: false, next: false });
 
   useEffect(() => {
     const el = railRef.current;
@@ -1060,15 +1015,33 @@ function LatestBody({ mode }) {
     return () => io.disconnect();
   }, [entries]);
 
+  useEffect(() => {
+    if (mode !== "rail") return;
+    const el = railRef.current;
+    if (!el) return;
+    const update = () => {
+      const max = el.scrollWidth - el.clientWidth;
+      setEdge({ prev: el.scrollLeft > 4, next: el.scrollLeft < max - 4 });
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [mode, entries, filter]);
+
   const shown = (entries || []).filter((e) => filter === "all" || e.kind === filter);
-  const visible = mode === "rail" ? shown.slice(0, LATEST_RAIL_MAX) : shown;
+  const visible = mode === "rail" ? shown.slice(0, REEL_RAIL_MAX) : shown;
 
   const open = (e) => {
     const items = e.clips.map((c) => ({
       type: "video",
       src: c.src,
-      caption: c.title,
-      tag: [t(`latest.kind.${e.kind}`), c.client || e.client, fmtMonth(c.date, lang)].filter(Boolean).join(" · "),
+      caption: L(c.title, lang),
+      body: L(c.body, lang),
+      tag: [t(`reel.kind.${e.kind}`), L(c.client || e.client, lang), fmtMonth(c.date, lang)].filter(Boolean).join(" · "),
     }));
     // Series → start at the newest clip; single → the only one.
     openLightbox(items, items.length - 1);
@@ -1079,67 +1052,75 @@ function LatestBody({ mode }) {
     if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
   };
 
+  const isRail = mode === "rail";
   return (
     <>
-      <div className="latest__bar" data-reveal>
-        <div className="latest__filters" role="radiogroup" aria-label="Filter">
-          {LATEST_KINDS.map((k) => (
+      <div className="reel__bar" data-reveal>
+        <div className="reel__filters" role="radiogroup" aria-label="Filter">
+          {REEL_KINDS.map((k) => (
             <button
               key={k}
               type="button"
               role="radio"
               aria-checked={filter === k}
-              className={`latest__chip ${filter === k ? "is-active" : ""}`}
+              className={`reel__chip ${filter === k ? "is-active" : ""}`}
               onClick={() => setFilter(k)}
             >
-              {t(`latest.filter.${k}`)}
+              {t(`reel.filter.${k}`)}
             </button>
           ))}
         </div>
-        {mode === "rail" && (
-          <div className="latest__arrows">
-            <button type="button" className="latest__arrow" onClick={() => scrollBy(-1)} aria-label={t("latest.prev")}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5 L8 12 L15 19" /></svg>
-            </button>
-            <button type="button" className="latest__arrow" onClick={() => scrollBy(1)} aria-label={t("latest.next")}>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5 L16 12 L9 19" /></svg>
-            </button>
-          </div>
-        )}
       </div>
 
-      <div ref={railRef} className={`latest__${mode}`} data-reveal>
-        {visible.map((e) => (
-          <LatestTile key={e.key} e={e} armed={armed} onOpen={() => open(e)} t={t} lang={lang} />
-        ))}
-        {entries && !visible.length && <p className="latest__empty">{t("latest.empty")}</p>}
-        {mode === "rail" && !!shown.length && (
-          <a className="ltile ltile--more" href="work.html">
-            <span className="ltile__more-inner">
-              <span className="ltile__more-title">{t("latest.archive")}</span>
-              <span className="ltile__more-hint">{t("latest.archiveHint")}</span>
-              <span className="ltile__more-arrow" aria-hidden="true">→</span>
-            </span>
-          </a>
+      <div className={`reel__wrap ${edge.prev ? "can-prev" : ""} ${edge.next ? "can-next" : ""}`} data-reveal>
+        <div ref={railRef} className={`reel__${mode}`}>
+          {visible.map((e) => (
+            <ReelTile key={e.key} e={e} armed={armed} onOpen={() => open(e)} t={t} lang={lang} />
+          ))}
+          {entries && !visible.length && <p className="reel__empty">{t("reel.empty")}</p>}
+          {isRail && !!shown.length && (
+            <a className="rtile rtile--more" href="work.html">
+              <span className="rtile__more-inner">
+                <span className="rtile__more-title">{t("reel.archive")}</span>
+                <span className="rtile__more-hint">{t("reel.archiveHint")}</span>
+                <span className="rtile__more-arrow" aria-hidden="true">→</span>
+              </span>
+            </a>
+          )}
+          {!isRail && <span className="rtile rtile--spacer" aria-hidden="true" />}
+        </div>
+        {isRail && (
+          <>
+            <button type="button" className="reel__arrow reel__arrow--prev" onClick={() => scrollBy(-1)} aria-label={t("reel.prev")} tabIndex={edge.prev ? 0 : -1}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5 L8 12 L15 19" /></svg>
+            </button>
+            <button type="button" className="reel__arrow reel__arrow--next" onClick={() => scrollBy(1)} aria-label={t("reel.next")} tabIndex={edge.next ? 0 : -1}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5 L16 12 L9 19" /></svg>
+            </button>
+          </>
         )}
-        {mode === "grid" && <span className="ltile ltile--spacer" aria-hidden="true" />}
       </div>
     </>
   );
 }
 
-function Latest() {
+function Work() {
   const t = useT();
   return (
-    <section className="latest" id="latest" data-screen-label="02b Latest">
+    <section className="work reel" id="work" data-screen-label="02 Work">
       <div className="section-head section-head--row" data-reveal>
         <div>
-          <span className="eyebrow"><span className="eyebrow__dot"/> {t("latest.eyebrow")}</span>
-          <h2 className="display">{t("latest.title")}</h2>
-          <p className="lede">{br(t("latest.lede"))}</p>
+          <span className="eyebrow"><span className="eyebrow__dot"/> {t("work.eyebrow")}</span>
+          <h2 className="display">{t("work.title")}</h2>
         </div>
       </div>
-      <LatestBody mode="rail" />
+      <div className="work__intro">
+        <p className="work__disclaimer" data-reveal>
+          <span className="work__disclaimer-mark" aria-hidden="true" />
+          <span>{br(t("work.disclaimer"))}</span>
+        </p>
+      </div>
+      <ReelBody mode="rail" />
     </section>
   );
 }
@@ -1171,8 +1152,8 @@ function Approach() {
 }
 
 // ─── Services ─────────────────────────────────────────────────────
-// Cards that map onto a Latest filter get a "See recent work" deep link
-// (card index → latest.json `kind`).
+// Cards that map onto a reel filter get a "See recent work" deep link
+// (card index → work.json `kind`).
 const SERVICE_RECENT = { 2: "brand", 3: "short" };
 
 function Services() {
@@ -1195,7 +1176,7 @@ function Services() {
         {c.bullets.filter((b) => b && b.trim()).map((b, j) => <li key={j}>{b}</li>)}
       </ul>
       {SERVICE_RECENT[c.n] && (
-        <a className="service__recent" href="#latest" onClick={() => latestFilter.set(SERVICE_RECENT[c.n])}>
+        <a className="service__recent" href="#work" onClick={() => reelFilter.set(SERVICE_RECENT[c.n])}>
           {t("services.recent")} <span className="btn__arrow">→</span>
         </a>
       )}
@@ -2104,7 +2085,6 @@ function Page() {
         <WorkedFor />
         <Services />
         <Work />
-        <Latest />
         <Approach />
         <Testimonials />
         <Tools />
@@ -2160,14 +2140,14 @@ function ArchivePage() {
         </div>
       </nav>
       <main>
-        <section className="latest latest--archive" id="latest">
+        <section className="reel reel--archive" id="work">
           <div className="section-head section-head--row" data-reveal>
             <div>
               <span className="eyebrow"><span className="eyebrow__dot"/> {t("archive.eyebrow")}</span>
               <h2 className="display">{t("archive.title")}</h2>
             </div>
           </div>
-          <LatestBody mode="grid" />
+          <ReelBody mode="grid" />
         </section>
       </main>
       <Footer />
