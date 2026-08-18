@@ -83,7 +83,6 @@ function Lightbox({ items, startIndex, onClose }) {
         <div className="lb__caption" onClick={(e) => e.stopPropagation()}>
           {cur.tag && <span className="lb__caption-tag">{cur.tag}</span>}
           <span className="lb__caption-title">{cur.caption}</span>
-          {cur.body && <p className="lb__caption-body">{cur.body}</p>}
         </div>
       )}
       {total > 1 && (
@@ -833,24 +832,26 @@ function VideoPlayer({ src, poster, t, preview = false, playLabelKey = "work.pla
 
 // ─── Work — the reel (data-driven) ────────────────────────────────
 // One portfolio section, one data source. Every piece lives in
-// work.json (one entry per clip) and shows up newest-first: a
-// horizontal filmstrip on the home page (capped at REEL_RAIL_MAX, with
-// an archive tile at the end) and a justified grid on work.html.
+// work.json (one entry per clip) and renders newest-first in the
+// editorial grid: media on top, tag / title / body underneath — the
+// same read as the original hand-built reel, just additive. The home
+// page shows the newest REEL_HOME_MAX; work.html shows everything.
 // Two categories — brand / short — drive the filter chips and the
 // Services deep links. Clips that share a `series` key (retainer /
 // running brand content) collapse into ONE tile with a clip count, so
-// ongoing work never floods the rail; opening it plays the whole series
-// in the lightbox, oldest → newest.
+// ongoing work never floods the page; opening it plays the whole
+// series in the lightbox, oldest → newest.
 //
 // Entry shape (work.json):
 //   { id, date: "YYYY-MM-DD", kind: "brand"|"short", src, aspect: "16/9",
 //     title, client?, body?, poster?, series?, seriesTitle?, ongoing? }
 // title / client / body / seriesTitle accept a plain string or
 // { en, de, ru }. `src` may be a relative path or a full URL — host
-// videos off-repo. `body` is the editorial paragraph shown in the
-// lightbox caption.
+// videos off-repo. `poster` (WebP still) is what makes a tile paint
+// instantly; without one the browser has to fetch enough of the video
+// to decode a frame.
 const REEL_MANIFEST = "work.json";
-const REEL_RAIL_MAX = 10;
+const REEL_HOME_MAX = 6;
 const REEL_KINDS = ["all", "brand", "short"];
 
 // Localised field: string, or { en, de, ru } → current language, EN fallback.
@@ -903,7 +904,8 @@ function useReelEntries() {
           clips.sort((a, b) => a.date.localeCompare(b.date));
           const last = clips[clips.length - 1];
           const isSeries = clips.length > 1 || !!last.series;
-          const seriesTitle = (clips.find((c) => c.seriesTitle) || {}).seriesTitle;
+          // The clip that names the series also carries its copy.
+          const lead = clips.find((c) => c.seriesTitle) || last;
           out.push({
             key,
             clips,
@@ -913,7 +915,8 @@ function useReelEntries() {
             aspect: last.aspect || "16/9",
             poster: last.poster || null,
             src: last.src,
-            title: isSeries ? seriesTitle || last.client || last.title : last.title,
+            title: isSeries ? lead.seriesTitle || lead.client || lead.title : last.title,
+            body: isSeries ? lead.body : last.body,
             series: isSeries,
             ongoing: clips.some((c) => c.ongoing),
           });
@@ -934,35 +937,70 @@ function fmtMonth(date, lang) {
   catch (_) { return date; }
 }
 
+// Editorial 12-column layout: every row sums to 12. Landscape wants 6,
+// square 4, portrait 3; a row closes when the next piece wouldn't fit,
+// and whatever is left over is spread across that row's pieces so
+// nothing leaves a hole (single-piece rows are capped instead).
+// Returns one span per entry.
+function reelSpans(entries) {
+  const weight = (ar) => {
+    const [w, h] = String(ar).split("/").map(Number);
+    const r = w && h ? w / h : 16 / 9;
+    return r > 1.15 ? 6 : r < 0.87 ? 3 : 4;
+  };
+  const spans = new Array(entries.length);
+  let row = [], sum = 0;
+  // A piece alone in its row is capped instead of stretched to 12 —
+  // a full-bleed 16:9 or a 4-column-wide portrait would dwarf the rest.
+  const cap = { 6: 8, 4: 6, 3: 4 };
+  const close = () => {
+    if (row.length === 1) {
+      spans[row[0]] = cap[spans[row[0]]];
+    } else {
+      let extra = 12 - sum;
+      for (let i = 0; extra > 0; i = (i + 1) % row.length, extra--) spans[row[i]] += 1;
+    }
+    row = []; sum = 0;
+  };
+  entries.forEach((e, i) => {
+    const w = weight(e.aspect);
+    if (sum + w > 12) close();
+    spans[i] = w; row.push(i); sum += w;
+  });
+  if (row.length) close();
+  return spans;
+}
+
 // One tile. Hover (desktop) plays a muted preview in place; click opens
 // the lightbox. `armed` gates mounting the <video> until the reel is
-// near the viewport so ten clips' worth of metadata doesn't load on
-// first paint.
-function ReelTile({ e, armed, onOpen, t, lang }) {
+// near the viewport; the poster paints regardless.
+function ReelTile({ e, span, armed, onOpen, t, lang }) {
   const vRef = useRef(null);
   const play = () => { const v = vRef.current; if (v) v.play().catch(() => {}); };
   const stop = () => { const v = vRef.current; if (v) { v.pause(); try { v.currentTime = 0; } catch (_) {} } };
   const kind = t(`reel.kind.${e.kind}`);
   const meta = [kind, e.client && !e.series ? L(e.client, lang) : null, fmtMonth(e.date, lang)].filter(Boolean).join(" · ");
   const title = L(e.title, lang);
+  const body = L(e.body, lang);
   return (
-    <button
-      type="button"
-      className={`rtile ${e.series ? "rtile--series" : ""}`}
-      style={{ "--ar": e.aspect }}
-      onClick={onOpen}
-      onMouseEnter={play}
-      onMouseLeave={stop}
-      onFocus={play}
-      onBlur={stop}
-      aria-label={`${title} — ${meta}`}
-    >
-      <span className="rtile__media" style={{ aspectRatio: e.aspect }}>
-        {armed ? (
+    <figure className={`rtile ${e.series ? "rtile--series" : ""}`} style={{ "--span": span }}>
+      <button
+        type="button"
+        className="rtile__media"
+        style={{ aspectRatio: e.aspect }}
+        onClick={onOpen}
+        onMouseEnter={play}
+        onMouseLeave={stop}
+        onFocus={play}
+        onBlur={stop}
+        aria-label={`${title} — ${meta}`}
+      >
+        {e.poster && <img className="rtile__poster" src={e.poster} alt="" loading="lazy" />}
+        {armed && (
           <video
             ref={vRef}
             className="rtile__video"
-            src={e.src}
+            src={e.poster ? e.src : `${e.src}#t=0.001`}
             poster={e.poster || undefined}
             preload={e.poster ? "none" : "metadata"}
             muted
@@ -970,9 +1008,7 @@ function ReelTile({ e, armed, onOpen, t, lang }) {
             playsInline
             tabIndex={-1}
           />
-        ) : e.poster ? (
-          <img className="rtile__video" src={e.poster} alt="" loading="lazy" />
-        ) : null}
+        )}
         {e.series && (
           <span className="rtile__stack">
             <span className="rtile__stack-n">{e.clips.length}</span> {t("reel.clips")}
@@ -980,33 +1016,31 @@ function ReelTile({ e, armed, onOpen, t, lang }) {
           </span>
         )}
         <span className="rtile__play" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5 L19 12 L8 19 Z" /></svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5 L19 12 L8 19 Z" /></svg>
         </span>
-      </span>
-      <span className="rtile__cap">
+      </button>
+      <figcaption className="rtile__cap">
         <span className="rtile__tag">{meta}</span>
-        <span className="rtile__title">{title}</span>
-      </span>
-    </button>
+        <h3 className="rtile__title">{title}</h3>
+        {body && <p className="rtile__body">{br(body)}</p>}
+      </figcaption>
+    </figure>
   );
 }
 
-// Shared body: filter chips + tiles. mode="rail" (home) is a horizontal
-// filmstrip with edge fades and overlay arrows that hide at either end;
-// mode="grid" (work.html) is a justified, wrapping gallery of everything.
-function ReelBody({ mode }) {
+// Filter chips + editorial grid. `limit` caps the count (home page) and
+// adds the archive link; work.html passes none.
+function ReelBody({ limit }) {
   const t = useT();
   const [lang] = useLang();
   const openLightbox = React.useContext(LightboxContext);
   const entries = useReelEntries();
   const [filter, setFilter] = useReelFilter();
-  const railRef = useRef(null);
+  const gridRef = useRef(null);
   const [armed, setArmed] = useState(false);
-  // Which way the rail can still scroll — drives arrow + fade visibility.
-  const [edge, setEdge] = useState({ prev: false, next: false });
 
   useEffect(() => {
-    const el = railRef.current;
+    const el = gridRef.current;
     if (!el) return;
     const io = new IntersectionObserver((es) => {
       if (es.some((x) => x.isIntersecting)) { setArmed(true); io.disconnect(); }
@@ -1015,44 +1049,21 @@ function ReelBody({ mode }) {
     return () => io.disconnect();
   }, [entries]);
 
-  useEffect(() => {
-    if (mode !== "rail") return;
-    const el = railRef.current;
-    if (!el) return;
-    const update = () => {
-      const max = el.scrollWidth - el.clientWidth;
-      setEdge({ prev: el.scrollLeft > 4, next: el.scrollLeft < max - 4 });
-    };
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      el.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [mode, entries, filter]);
-
   const shown = (entries || []).filter((e) => filter === "all" || e.kind === filter);
-  const visible = mode === "rail" ? shown.slice(0, REEL_RAIL_MAX) : shown;
+  const visible = limit ? shown.slice(0, limit) : shown;
+  const spans = reelSpans(visible);
 
   const open = (e) => {
     const items = e.clips.map((c) => ({
       type: "video",
       src: c.src,
       caption: L(c.title, lang),
-      body: L(c.body, lang),
       tag: [t(`reel.kind.${e.kind}`), L(c.client || e.client, lang), fmtMonth(c.date, lang)].filter(Boolean).join(" · "),
     }));
     // Series → start at the newest clip; single → the only one.
     openLightbox(items, items.length - 1);
   };
 
-  const scrollBy = (dir) => {
-    const el = railRef.current;
-    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: "smooth" });
-  };
-
-  const isRail = mode === "rail";
   return (
     <>
       <div className="reel__bar" data-reveal>
@@ -1072,34 +1083,20 @@ function ReelBody({ mode }) {
         </div>
       </div>
 
-      <div className={`reel__wrap ${edge.prev ? "can-prev" : ""} ${edge.next ? "can-next" : ""}`} data-reveal>
-        <div ref={railRef} className={`reel__${mode}`}>
-          {visible.map((e) => (
-            <ReelTile key={e.key} e={e} armed={armed} onOpen={() => open(e)} t={t} lang={lang} />
-          ))}
-          {entries && !visible.length && <p className="reel__empty">{t("reel.empty")}</p>}
-          {isRail && !!shown.length && (
-            <a className="rtile rtile--more" href="work.html">
-              <span className="rtile__more-inner">
-                <span className="rtile__more-title">{t("reel.archive")}</span>
-                <span className="rtile__more-hint">{t("reel.archiveHint")}</span>
-                <span className="rtile__more-arrow" aria-hidden="true">→</span>
-              </span>
-            </a>
-          )}
-          {!isRail && <span className="rtile rtile--spacer" aria-hidden="true" />}
-        </div>
-        {isRail && (
-          <>
-            <button type="button" className="reel__arrow reel__arrow--prev" onClick={() => scrollBy(-1)} aria-label={t("reel.prev")} tabIndex={edge.prev ? 0 : -1}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5 L8 12 L15 19" /></svg>
-            </button>
-            <button type="button" className="reel__arrow reel__arrow--next" onClick={() => scrollBy(1)} aria-label={t("reel.next")} tabIndex={edge.next ? 0 : -1}>
-              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 5 L16 12 L9 19" /></svg>
-            </button>
-          </>
-        )}
+      <div ref={gridRef} className="reel__grid" data-reveal>
+        {visible.map((e, i) => (
+          <ReelTile key={e.key} e={e} span={spans[i]} armed={armed} onOpen={() => open(e)} t={t} lang={lang} />
+        ))}
+        {entries && !visible.length && <p className="reel__empty">{t("reel.empty")}</p>}
       </div>
+
+      {limit && shown.length > limit && (
+        <div className="reel__more" data-reveal>
+          <a className="btn btn--ghost" href="work.html">
+            {t("reel.archive")} <span className="btn__arrow">→</span>
+          </a>
+        </div>
+      )}
     </>
   );
 }
@@ -1120,7 +1117,7 @@ function Work() {
           <span>{br(t("work.disclaimer"))}</span>
         </p>
       </div>
-      <ReelBody mode="rail" />
+      <ReelBody limit={REEL_HOME_MAX} />
     </section>
   );
 }
@@ -2147,7 +2144,7 @@ function ArchivePage() {
               <h2 className="display">{t("archive.title")}</h2>
             </div>
           </div>
-          <ReelBody mode="grid" />
+          <ReelBody />
         </section>
       </main>
       <Footer />

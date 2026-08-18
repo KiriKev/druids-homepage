@@ -1066,18 +1066,16 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 }
 
 /* ─── Work / reel (data-driven) ─────────────────────────────── */
-/* Two render modes share the tile: .reel__rail is the home filmstrip
-   (fixed media height, width follows each clip's aspect ratio, so 9:16
-   brand content and 16:9 films sit side by side at true proportions);
-   .reel__grid is the archive's justified wrap (flex-grow ∝ aspect
-   keeps every row's tiles the same height). --ar is set inline per tile
-   from work.json's `aspect` and is used raw inside calc(). */
+/* Editorial 12-column grid; each tile's span is computed in JS so every
+   row sums to 12 (landscape 6, square 4, portrait 3, leftovers spread).
+   Media keeps its true aspect (inline aspect-ratio), captions sit
+   underneath, rows align to the top so differing heights read as a
+   magazine spread rather than a broken grid. */
 .reel {
   position: relative;
   z-index: 3;
   border-top: 1px solid var(--rule);
   padding-bottom: clamp(48px, 6vw, 90px);
-  --rtile-h: clamp(220px, 26vw, 340px);
 }
 .reel__bar {
   max-width: var(--maxw);
@@ -1100,143 +1098,83 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 .reel__chip:hover { color: var(--cream); border-color: rgba(201, 163, 92, 0.5); }
 .reel__chip.is-active { color: var(--ink); background: var(--gold); border-color: var(--gold); }
 
-/* Wrap around the rail: hosts the overlay arrows and the edge fades.
-   .can-prev / .can-next are toggled from scroll position, so an arrow
-   and its fade only show while there is somewhere left to go. */
-.reel__wrap { position: relative; }
-.reel__wrap::before,
-.reel__wrap::after {
-  content: "";
-  position: absolute; top: 0; bottom: 0;
-  width: clamp(48px, 8vw, 140px);
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity .35s ease;
-}
-.reel__wrap::before { left: 0;  background: linear-gradient(90deg, var(--ink) 0%, transparent 100%); }
-.reel__wrap::after  { right: 0; background: linear-gradient(270deg, var(--ink) 0%, transparent 100%); }
-.reel__wrap.can-prev::before,
-.reel__wrap.can-next::after { opacity: 1; }
-.reel__arrow {
-  appearance: none;
-  position: absolute;
-  top: calc(12px + var(--rtile-h) / 2);   /* centre of the media strip */
-  transform: translateY(-50%);
-  z-index: 3;
-  width: 52px; height: 52px; border-radius: 50%;
-  background: rgba(7, 13, 12, 0.72);
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 28px -8px rgba(231, 200, 133, 0.5);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .35s ease, background .3s, color .3s, transform .3s cubic-bezier(.2,.7,.2,1);
-}
-.reel__arrow--prev { left: clamp(10px, 1.5vw, 24px); }
-.reel__arrow--next { right: clamp(10px, 1.5vw, 24px); }
-.reel__wrap.can-prev .reel__arrow--prev,
-.reel__wrap.can-next .reel__arrow--next { opacity: 1; pointer-events: auto; }
-.reel__arrow:hover {
-  background: rgba(201, 163, 92, 0.18);
-  color: var(--gold-glow);
-  transform: translateY(-50%) scale(1.06);
-}
-.reel__arrow--prev svg { margin-left: -2px; }
-.reel__arrow--next svg { margin-left: 2px; }
-
-/* Rail — full-bleed scroller whose first tile aligns with the page
-   column (padding = whatever centres --maxw, never less than --gutter). */
-.reel__rail {
-  display: flex;
-  gap: clamp(14px, 1.6vw, 24px);
-  margin-top: 28px;
-  padding: 12px max(var(--gutter), calc((100% - var(--maxw)) / 2 + var(--gutter))) 24px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: max(var(--gutter), calc((100% - var(--maxw)) / 2 + var(--gutter)));
-  scrollbar-width: none;
-}
-.reel__rail::-webkit-scrollbar { display: none; }
-.reel__rail .rtile { width: calc(var(--rtile-h) * (var(--ar))); }
-.reel__rail .rtile__media { height: var(--rtile-h); }
-
-/* Grid — justified rows. */
 .reel__grid {
   max-width: var(--maxw);
-  margin: 28px auto 0;
-  padding: 12px var(--gutter) 0;
-  display: flex; flex-wrap: wrap;
-  gap: clamp(18px, 2vw, 28px);
+  margin: 48px auto 0;
+  padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  align-items: start;
+  gap: clamp(36px, 4vw, 64px) clamp(18px, 2vw, 32px);
 }
-.reel__grid .rtile { flex: calc(var(--ar)) 1 calc(var(--ar) * 240px); }
-.reel__grid .rtile__media { width: 100%; }
-.reel__grid .rtile--spacer { flex: 10 1 0; height: 0; padding: 0; margin: 0; visibility: hidden; }
-
 .reel__empty {
+  grid-column: 1 / -1;
   margin: 0; padding: 40px 0;
   font-family: var(--ff-italic); font-style: italic;
   font-size: 18px; color: var(--cream-dim);
 }
+.reel__more {
+  max-width: var(--maxw);
+  margin: 48px auto 0;
+  padding: 0 var(--gutter);
+}
 
 /* Tile */
 .rtile {
-  appearance: none;
-  background: none; border: 0; padding: 0; margin: 0;
-  color: inherit; font: inherit; text-align: left; text-decoration: none;
-  cursor: pointer;
-  display: flex; flex-direction: column; gap: 14px;
-  flex: 0 0 auto;
-  scroll-snap-align: start;
+  grid-column: span var(--span, 6);
+  margin: 0;
+  display: flex; flex-direction: column; gap: 22px;
   min-width: 0;
 }
 .rtile__media {
+  appearance: none;
+  border: 1px solid var(--rule-soft);
+  padding: 0;
+  cursor: pointer;
   position: relative;
   display: block;
+  width: 100%;
   overflow: hidden;
   border-radius: 4px;
   background: linear-gradient(135deg, #0e1c1a, #0a1413);
-  border: 1px solid var(--rule-soft);
-  transition: transform .5s cubic-bezier(.2,.7,.2,1), border-color .3s, box-shadow .3s;
+  transition: transform .5s cubic-bezier(.2,.7,.2,1), border-color .3s;
 }
 .rtile--series .rtile__media {
   /* Stacked-cards hint: an offset outline peeking out top-right. */
-  box-shadow: 6px -6px 0 -2px var(--ink), 6px -6px 0 -1px rgba(201, 163, 92, 0.35);
+  box-shadow: 8px -8px 0 -2px var(--ink), 8px -8px 0 -1px rgba(201, 163, 92, 0.35);
 }
-.rtile:hover .rtile__media,
-.rtile:focus-visible .rtile__media {
+.rtile__media:hover,
+.rtile__media:focus-visible {
   transform: translateY(-3px);
   border-color: rgba(201, 163, 92, 0.5);
 }
-.rtile:focus-visible { outline: none; }
-.rtile:focus-visible .rtile__media { outline: 1px solid var(--gold); outline-offset: 3px; }
+.rtile__media:focus-visible { outline: 1px solid var(--gold); outline-offset: 3px; }
+.rtile__poster,
 .rtile__video {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
-  background: #000;
 }
+.rtile__poster { background: #000; }
+/* Video sits above the poster; transparent (no frame yet) → poster shows through. */
+.rtile__video { background: transparent; }
 .rtile__play {
-  position: absolute; right: 12px; bottom: 12px;
-  width: 36px; height: 36px; border-radius: 50%;
+  position: absolute; right: 16px; bottom: 16px;
+  width: clamp(44px, 4vw, 56px); height: clamp(44px, 4vw, 56px); border-radius: 50%;
   display: inline-flex; align-items: center; justify-content: center;
   background: rgba(7, 13, 12, 0.6);
-  border: 1px solid var(--gold);
+  border: 1.5px solid var(--gold);
   color: var(--gold);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 28px -8px rgba(231, 200, 133, 0.5);
   transition: background .3s, color .3s, transform .3s cubic-bezier(.2,.7,.2,1);
 }
-.rtile__play svg { margin-left: 2px; }
-.rtile:hover .rtile__play { background: rgba(201, 163, 92, 0.18); color: var(--gold-glow); transform: scale(1.06); }
+.rtile__play svg { margin-left: 3px; }
+.rtile__media:hover .rtile__play { background: rgba(201, 163, 92, 0.18); color: var(--gold-glow); transform: scale(1.06); }
 .rtile__stack {
-  position: absolute; left: 12px; top: 12px;
+  position: absolute; left: 14px; top: 14px;
   padding: 6px 10px; border-radius: 999px;
   background: rgba(7, 13, 12, 0.7);
   border: 1px solid rgba(243, 234, 216, 0.18);
@@ -1248,46 +1186,29 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
   white-space: nowrap;
 }
 .rtile__stack-n { color: var(--gold); }
-.rtile__cap { display: flex; flex-direction: column; gap: 6px; }
+.rtile__cap { display: flex; flex-direction: column; max-width: 46ch; }
 .rtile__tag {
   font-family: var(--ff-mono);
-  font-size: 10.5px; letter-spacing: 0.2em; text-transform: uppercase;
+  font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--gold);
+  margin-bottom: 12px;
 }
 .rtile__title {
   font-family: var(--ff-display);
-  font-size: clamp(18px, 1.5vw, 24px);
-  line-height: 1.15;
+  font-weight: 400;
+  font-size: clamp(22px, 1.9vw, 30px);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+  margin: 0 0 12px;
   color: var(--cream);
   text-wrap: balance;
 }
-
-/* Archive tile at the end of the rail. */
-.rtile--more { width: calc(var(--rtile-h) * 0.72); }
-.rtile__more-inner {
-  height: var(--rtile-h);
-  border: 1px dashed rgba(201, 163, 92, 0.4);
-  border-radius: 4px;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 22px; gap: 8px;
-  transition: border-color .3s, background .3s;
+.rtile__body {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--cream-dim);
 }
-.rtile__more-title {
-  font-family: var(--ff-display);
-  font-size: clamp(22px, 2vw, 30px);
-  line-height: 1.05;
-  color: var(--cream);
-}
-.rtile__more-hint { font-size: 13.5px; color: var(--cream-dim); }
-.rtile__more-arrow {
-  font-family: var(--ff-display);
-  font-size: 28px; line-height: 1;
-  color: var(--gold);
-  margin-top: 6px;
-  transition: transform .3s cubic-bezier(.2,.7,.2,1);
-}
-.rtile--more:hover .rtile__more-inner { border-color: var(--gold); background: rgba(201, 163, 92, 0.06); }
-.rtile--more:hover .rtile__more-arrow { transform: translateX(6px); }
 
 /* Services → reel deep link. */
 .service__recent {
@@ -1306,9 +1227,8 @@ image-slot[id^="tool-elevenlabs-"]::part(image) {
 .reel--archive { border-top: 0; padding-top: 72px; min-height: 100vh; }
 
 @media (max-width: 800px) {
-  .reel { --rtile-h: clamp(170px, 50vw, 300px); }
-  .reel__arrow { display: none; }
-  .reel__grid .rtile { flex-basis: calc(var(--ar) * 160px); }
+  .reel__grid { grid-template-columns: 1fr; gap: 44px; }
+  .rtile { grid-column: span 1; }
 }
 
 /* ─── Approach ───────────────────────────────────────────────── */
@@ -1973,19 +1893,6 @@ video.lb__media { cursor: default; outline: 1px solid var(--rule); }
   line-height: 1.15;
   color: var(--cream);
 }
-/* Editorial paragraph — clamped so it never swallows the frame; hover
-   (or focus-within) unfolds it. */
-.lb__caption-body {
-  margin: 4px 0 0;
-  font-size: 13.5px; line-height: 1.55;
-  color: var(--cream-dim);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  transition: color .3s;
-}
-.lb__caption:hover .lb__caption-body { -webkit-line-clamp: unset; color: var(--cream); }
 
 @media (max-width: 720px) {
   .lb__caption { left: 14px; bottom: 14px; max-width: 80vw; padding: 10px 12px; }

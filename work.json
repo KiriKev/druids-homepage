@@ -1,37 +1,120 @@
 [
-  { "id": "2026-06-14-brand-reel", "date": "2026-06-14", "kind": "brand", "src": "videos/work-1.mp4", "aspect": "1/1",
-    "client": { "en": "Brand reel", "de": "Markenfilm", "ru": "Бренд-ролик" },
-    "title":  { "en": "A brand, told in motion.", "de": "Eine Marke, in Bewegung erzählt.", "ru": "Бренд в движении." },
-    "body":   { "en": "Engaging brand reels are scroll-stoppers. Pair them with a storyline and your brand becomes an arc people want to see episodes of.",
-                "de": "Mitreißende Markenfilme sind Scrollstopper. In einen Erzählbogen verpackt wird aus deiner Marke eine Serie, von der man neue Folgen sehen will.",
-                "ru": "Захватывающие бренд-ролики останавливают скролл. А когда к ним добавляется сюжет, бренд превращается в историю, у которой хочется смотреть новые серии." } },
-
-  { "id": "2026-06-12-personal-brand", "date": "2026-06-12", "kind": "brand", "src": "videos/work-2.mp4", "aspect": "16/9",
-    "client": { "en": "Personal brand", "de": "Personenmarke", "ru": "Личный бренд" },
-    "title":  { "en": "A personal brand, told in dynamic frames.", "de": "Eine Personenmarke, in dynamischen Bildern erzählt.", "ru": "Презентация личного бренда через динамичные кадры." },
-    "body":   { "en": "Whether you want your personal avatar to fight, run, paint, or whatever else you have in mind — I can bring it to life, no matter the complexity.",
-                "de": "Egal ob dein persönlicher Avatar kämpfen, laufen, malen oder etwas ganz anderes soll — ich erwecke ihn zum Leben, egal wie komplex.",
-                "ru": "Хочешь, чтобы твой персональный аватар дрался, бегал, рисовал — или делал что-то совсем другое? Я оживлю его, какой бы сложной ни была задача." } },
-
-  { "id": "2026-06-10-tool-study-kling", "date": "2026-06-10", "kind": "short", "src": "videos/kling.mp4", "aspect": "16/9",
-    "series": "tool-studies", "seriesTitle": { "en": "Tool studies", "de": "Werkzeugstudien", "ru": "Этюды с инструментами" }, "ongoing": true,
-    "title": "Kling study" },
-
-  { "id": "2026-06-08-tool-study-seedance", "date": "2026-06-08", "kind": "short", "src": "videos/seedance.mp4", "aspect": "16/9",
+  {
+    "id": "2026-06-14-brand-reel",
+    "date": "2026-06-14",
+    "kind": "brand",
+    "src": "videos/work-1.mp4",
+    "poster": "posters/work-1.webp",
+    "aspect": "1/1",
+    "client": {
+      "en": "Brand reel",
+      "de": "Markenfilm",
+      "ru": "Бренд-ролик"
+    },
+    "title": {
+      "en": "A brand, told in motion.",
+      "de": "Eine Marke, in Bewegung erzählt.",
+      "ru": "Бренд в движении."
+    },
+    "body": {
+      "en": "Engaging brand reels are scroll-stoppers. Pair them with a storyline and your brand becomes an arc people want to see episodes of.",
+      "de": "Mitreißende Markenfilme sind Scrollstopper. In einen Erzählbogen verpackt wird aus deiner Marke eine Serie, von der man neue Folgen sehen will.",
+      "ru": "Захватывающие бренд-ролики останавливают скролл. А когда к ним добавляется сюжет, бренд превращается в историю, у которой хочется смотреть новые серии."
+    }
+  },
+  {
+    "id": "2026-06-12-personal-brand",
+    "date": "2026-06-12",
+    "kind": "brand",
+    "src": "videos/work-2.mp4",
+    "poster": "posters/work-2.webp",
+    "aspect": "16/9",
+    "client": {
+      "en": "Personal brand",
+      "de": "Personenmarke",
+      "ru": "Личный бренд"
+    },
+    "title": {
+      "en": "A personal brand, told in dynamic frames.",
+      "de": "Eine Personenmarke, in dynamischen Bildern erzählt.",
+      "ru": "Презентация личного бренда через динамичные кадры."
+    },
+    "body": {
+      "en": "Whether you want your personal avatar to fight, run, paint, or whatever else you have in mind — I can bring it to life, no matter the complexity.",
+      "de": "Egal ob dein persönlicher Avatar kämpfen, laufen, malen oder etwas ganz anderes soll — ich erwecke ihn zum Leben, egal wie komplex.",
+      "ru": "Хочешь, чтобы твой персональный аватар дрался, бегал, рисовал — или делал что-то совсем другое? Я оживлю его, какой бы сложной ни была задача."
+    }
+  },
+  {
+    "id": "2026-06-10-tool-study-kling",
+    "date": "2026-06-10",
+    "kind": "short",
+    "src": "videos/kling.mp4",
+    "poster": "posters/kling.webp",
+    "aspect": "16/9",
     "series": "tool-studies",
-    "title": "Seedance study" },
-
-  { "id": "2026-06-06-memory-film", "date": "2026-06-06", "kind": "short", "src": "videos/andrej_best_of.mp4", "aspect": "16/9",
-    "client": { "en": "Private · Memory film", "de": "Privat · Erinnerungsfilm", "ru": "Частное · Фильм-воспоминание" },
-    "title":  { "en": "A life, relived in minutes.", "de": "Ein Leben, in Minuten neu erlebt.", "ru": "Жизнь, прожитая за несколько минут." },
-    "body":   { "en": "Animations of someone’s own life — old photographs brought back to motion — are remembered far longer than the photos themselves. It’s easier to revisit a film than to dig through albums every time. In this example, a shining star of the universe walks the birthday guest home after work, where his loved ones surprise him with a journey back to childhood and a meeting with his late father. His father gently sets him on the motorbike, and his whole life flashes by: growing up, youth, the wedding, the faces of friends, the embraces of those he loves. A film outside of time. A piece families rewatch across generations.",
-                "de": "Animationen aus dem eigenen Leben, in denen alte Fotografien wieder in Bewegung kommen, bleiben länger in Erinnerung als die Fotos selbst. Ein Film lässt sich leichter wieder ansehen als jedes Mal das Album hervorzuholen. In diesem Beispiel bringt ein leuchtender Stern des Universums den Geburtstagsmenschen nach Feierabend nach Hause, wo seine Liebsten ihn mit einer Reise in die Kindheit überraschen und ihn dem verstorbenen Vater wieder begegnen lassen. Der Vater setzt ihn behutsam aufs Motorrad, und sein ganzes Leben zieht vorbei: das Erwachsenwerden, die Jugend, die Hochzeit, die Gesichter von Freunden, die Umarmungen geliebter Menschen. Ein Film außerhalb der Zeit. Ein Werk, das Familien über Generationen hinweg wieder ansehen.",
-                "ru": "Анимации о собственной жизни, в которых старые фотографии оживают, запоминаются куда дольше, чем сами снимки. Фильм проще пересмотреть, чем каждый раз перебирать альбом. В этом примере сияющая звезда Вселенной провожает именинника после рабочего дня домой, где его ждёт сюрприз от близких — путешествие в детство и встреча с ушедшим отцом. Папа с нежностью сажает его на мотоцикл, и перед глазами проносится вся жизнь: взросление, юность, свадьба, лица друзей и объятия любимых. Кино вне времени. Шедевр, который семьи пересматривают поколениями." } },
-
-  { "id": "2026-06-04-reactions", "date": "2026-06-04", "kind": "short", "src": "videos/work-4.mp4", "aspect": "16/9",
-    "client": { "en": "Reactions", "de": "Reaktionen", "ru": "Реакции" },
-    "title":  { "en": "Strangers, in tears.", "de": "Fremde, in Tränen.", "ru": "Эмоциональный резонанс." },
-    "body":   { "en": "Audiences reacting to films I made for people I’ve never met. The work travels, lands, and stays with them for years.",
-                "de": "Zuschauer, die auf Filme reagieren, die ich für Menschen gemacht habe, die ich nie getroffen habe. Die Arbeit reist, kommt an und bleibt jahrelang.",
-                "ru": "Это когда ты собираешь видео для людей, которых никогда не видел, а в итоге управляешь сердцебиением всего зала." } }
+    "seriesTitle": {
+      "en": "Tool studies",
+      "de": "Werkzeugstudien",
+      "ru": "Этюды с инструментами"
+    },
+    "ongoing": true,
+    "title": "Kling study"
+  },
+  {
+    "id": "2026-06-08-tool-study-seedance",
+    "date": "2026-06-08",
+    "kind": "short",
+    "src": "videos/seedance.mp4",
+    "poster": "posters/seedance.webp",
+    "aspect": "16/9",
+    "series": "tool-studies",
+    "title": "Seedance study"
+  },
+  {
+    "id": "2026-06-06-memory-film",
+    "date": "2026-06-06",
+    "kind": "short",
+    "src": "videos/andrej_best_of.mp4",
+    "poster": "posters/andrej_best_of.webp",
+    "aspect": "16/9",
+    "client": {
+      "en": "Private · Memory film",
+      "de": "Privat · Erinnerungsfilm",
+      "ru": "Частное · Фильм-воспоминание"
+    },
+    "title": {
+      "en": "A life, relived in minutes.",
+      "de": "Ein Leben, in Minuten neu erlebt.",
+      "ru": "Жизнь, прожитая за несколько минут."
+    },
+    "body": {
+      "en": "Animations of someone’s own life — old photographs brought back to motion — are remembered far longer than the photos themselves. It’s easier to revisit a film than to dig through albums every time. In this example, a shining star of the universe walks the birthday guest home after work, where his loved ones surprise him with a journey back to childhood and a meeting with his late father. His father gently sets him on the motorbike, and his whole life flashes by: growing up, youth, the wedding, the faces of friends, the embraces of those he loves. A film outside of time. A piece families rewatch across generations.",
+      "de": "Animationen aus dem eigenen Leben, in denen alte Fotografien wieder in Bewegung kommen, bleiben länger in Erinnerung als die Fotos selbst. Ein Film lässt sich leichter wieder ansehen als jedes Mal das Album hervorzuholen. In diesem Beispiel bringt ein leuchtender Stern des Universums den Geburtstagsmenschen nach Feierabend nach Hause, wo seine Liebsten ihn mit einer Reise in die Kindheit überraschen und ihn dem verstorbenen Vater wieder begegnen lassen. Der Vater setzt ihn behutsam aufs Motorrad, und sein ganzes Leben zieht vorbei: das Erwachsenwerden, die Jugend, die Hochzeit, die Gesichter von Freunden, die Umarmungen geliebter Menschen. Ein Film außerhalb der Zeit. Ein Werk, das Familien über Generationen hinweg wieder ansehen.",
+      "ru": "Анимации о собственной жизни, в которых старые фотографии оживают, запоминаются куда дольше, чем сами снимки. Фильм проще пересмотреть, чем каждый раз перебирать альбом. В этом примере сияющая звезда Вселенной провожает именинника после рабочего дня домой, где его ждёт сюрприз от близких — путешествие в детство и встреча с ушедшим отцом. Папа с нежностью сажает его на мотоцикл, и перед глазами проносится вся жизнь: взросление, юность, свадьба, лица друзей и объятия любимых. Кино вне времени. Шедевр, который семьи пересматривают поколениями."
+    }
+  },
+  {
+    "id": "2026-06-04-reactions",
+    "date": "2026-06-04",
+    "kind": "short",
+    "src": "videos/work-4.mp4",
+    "poster": "posters/work-4.webp",
+    "aspect": "16/9",
+    "client": {
+      "en": "Reactions",
+      "de": "Reaktionen",
+      "ru": "Реакции"
+    },
+    "title": {
+      "en": "Strangers, in tears.",
+      "de": "Fremde, in Tränen.",
+      "ru": "Эмоциональный резонанс."
+    },
+    "body": {
+      "en": "Audiences reacting to films I made for people I’ve never met. The work travels, lands, and stays with them for years.",
+      "de": "Zuschauer, die auf Filme reagieren, die ich für Menschen gemacht habe, die ich nie getroffen habe. Die Arbeit reist, kommt an und bleibt jahrelang.",
+      "ru": "Это когда ты собираешь видео для людей, которых никогда не видел, а в итоге управляешь сердцебиением всего зала."
+    }
+  }
 ]
