@@ -13,6 +13,7 @@ const TR = {
     "nav.services": "Services",
     "nav.approach": "Approach",
     "nav.voices": "Voices",
+    "nav.tools": "Instruments",
     "nav.cta": "Let’s chat",
 
     "hero.eyebrow": "Visual Artist · Copywriter · Builder",
@@ -263,6 +264,7 @@ const TR = {
     "nav.services": "Leistungen",
     "nav.approach": "Methode",
     "nav.voices": "Stimmen",
+    "nav.tools": "Instrumente",
     "nav.cta": "Lass uns reden",
 
     "hero.eyebrow": "Visueller Künstler · Texter · Entwickler",
@@ -517,6 +519,7 @@ const TR = {
     "nav.services": "Услуги",
     "nav.approach": "Метод",
     "nav.voices": "Отзывы",
+    "nav.tools": "Инструменты",
     "nav.cta": "Поговорим",
 
     "hero.eyebrow": "Визуальный художник · Автор текстов · Создатель",

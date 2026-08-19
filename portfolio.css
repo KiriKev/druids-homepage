@@ -223,7 +223,9 @@ html { scroll-behavior: smooth; }
 .nav__links a:hover { color: var(--cream); }
 .nav__links a:hover::after { transform: scaleX(1); }
 
-@media (max-width: 800px) {
+/* Five links need ~400px; below 960px the inline list would touch the
+   logo and the CTA, so the dropdown takes over a bit earlier. */
+@media (max-width: 960px) {
   .nav__links { display: none; }
 }
 
@@ -234,7 +236,7 @@ html { scroll-behavior: smooth; }
   display: none;
   position: relative;
 }
-@media (max-width: 800px) {
+@media (max-width: 960px) {
   .section-dd { display: inline-flex; }
 }
 .section-dd__trigger {

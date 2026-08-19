@@ -293,7 +293,7 @@ function SectionDropdown() {
   // "horizon" of 35% from the top of the viewport: whichever section
   // crosses that horizon most recently is treated as current.
   useEffect(() => {
-    const sections = ["services", "work", "approach", "testimonials"];
+    const sections = ["services", "work", "approach", "testimonials", "tools"];
     const els = sections.map((id) => document.getElementById(id)).filter(Boolean);
     if (!els.length) return;
     const compute = () => {
@@ -334,6 +334,7 @@ function SectionDropdown() {
     { id: "work", label: t("nav.work") },
     { id: "approach", label: t("nav.approach") },
     { id: "testimonials", label: t("nav.voices") },
+    { id: "tools", label: t("nav.tools") },
   ];
   const activeItem = sectionItems.find((s) => s.id === active) || sectionItems[0];
 
@@ -396,6 +397,7 @@ function Nav({ onChat }) {
         <li><a href="#work">{t("nav.work")}</a></li>
         <li><a href="#approach">{t("nav.approach")}</a></li>
         <li><a href="#testimonials">{t("nav.voices")}</a></li>
+        <li><a href="#tools">{t("nav.tools")}</a></li>
       </ul>
       <SectionDropdown />
       <div className="nav__right">
