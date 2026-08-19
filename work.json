@@ -1,5 +1,28 @@
 [
   {
+    "id": "2026-08-19-marinas-erbe-1",
+    "date": "2026-08-19",
+    "kind": "short",
+    "src": "videos/marinas-erbe-1.mp4",
+    "poster": "posters/marinas-erbe-1.webp",
+    "aspect": "16/9",
+    "tag": {
+      "en": "Private · Family History",
+      "de": "Privat · Familiengeschichte",
+      "ru": "Частное · Семейная история"
+    },
+    "title": {
+      "en": "A sugar bowl, carried out of history.",
+      "de": "Eine Zuckerdose, aus der Geschichte getragen.",
+      "ru": "Сахарница, вынесенная из истории."
+    },
+    "body": {
+      "en": "A client commissioned a short film scene from his family history: his ancestor Benjamin fleeing Soviet dekulakization, hidden in a hay cart, with the family sugar bowl handed over as the last keepsake of his forefathers. The brief required turning fragmented oral memories into a precise script, and I delivered a three-beat screenplay with full dialogue and AI-ready voice-direction tracks.",
+      "de": "Ein Kunde gab eine Kurzfilmszene aus seiner Familiengeschichte in Auftrag: sein Vorfahr Benjamin, der vor der sowjetischen Entkulakisierung flieht, versteckt in einem Heuwagen, mit der Zuckerdose der Familie als letztem Andenken an seine Vorväter. Die Aufgabe bestand darin, bruchstückhafte mündliche Erinnerungen in ein präzises Skript zu verwandeln. Ich lieferte ein Drehbuch in drei Akten mit vollständigen Dialogen und KI-fertigen Sprachregie-Spuren.",
+      "ru": "Клиент заказал короткометражную сцену из истории своей семьи: его предок Вениамин бежит от советского раскулачивания, спрятавшись в телеге с сеном, а семейная сахарница передаётся ему как последняя память о предках. Задача состояла в том, чтобы превратить обрывочные устные воспоминания в точный сценарий. Я написал сценарий из трёх частей с полными диалогами и дорожками режиссуры голоса, готовыми для ИИ-озвучки."
+    }
+  },
+  {
     "id": "2026-06-14-brand-reel",
     "date": "2026-06-14",
     "kind": "brand",
